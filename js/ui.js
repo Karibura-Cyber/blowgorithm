@@ -482,15 +482,52 @@ document.addEventListener('mousedown', e => {
 //  FILE OPERATIONS
 // ═══════════════════════════════════════════════
 function saveFile() {
+  openSaveDialog();
+}
+
+function openSaveDialog() {
+  const overlay = document.getElementById('save-overlay');
+  const input = document.getElementById('save-filename-input');
+  input.value = currentFileName || 'flowchart';
+  overlay.classList.add('open');
+  // Select all text so the user can immediately type a new name
+  setTimeout(() => { input.focus(); input.select(); }, 60);
+}
+
+function closeSaveDialog() {
+  document.getElementById('save-overlay').classList.remove('open');
+}
+
+function confirmSaveFile() {
+  const raw = document.getElementById('save-filename-input').value.trim();
+  const name = raw || 'flowchart';
+  // Sanitise: remove characters that are unsafe in file names
+  const safe = name.replace(/[\\/:*?"<>|]/g, '_');
+  currentFileName = safe;
+  document.title = 'Blowgorithm — ' + safe;
+  closeSaveDialog();
+
   const data = { version: 1, nextId, nodes: nodes.map(n => ({ ...n, _g: undefined })), conns };
   const json = JSON.stringify(data, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = (currentFileName || 'flowchart') + '.flow';
+  a.download = safe + '.flow';
   a.click();
   URL.revokeObjectURL(a.href);
+  statusMsg.textContent = 'บันทึกไฟล์: ' + safe + '.flow';
 }
+
+// Close save dialog on overlay click or Escape
+document.getElementById('save-overlay').addEventListener('mousedown', e => {
+  if (e.target === document.getElementById('save-overlay')) closeSaveDialog();
+});
+document.addEventListener('keydown', e => {
+  const overlay = document.getElementById('save-overlay');
+  if (!overlay.classList.contains('open')) return;
+  if (e.key === 'Escape') { e.preventDefault(); closeSaveDialog(); }
+  if (e.key === 'Enter')  { e.preventDefault(); confirmSaveFile(); }
+});
 
 function openFile() {
   const input = document.createElement('input');
