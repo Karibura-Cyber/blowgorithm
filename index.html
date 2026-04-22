@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blowgorithm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="header">
+  <div id="logo">
+    <svg viewBox="0 0 20 20" fill="none">
+      <rect x="2" y="6" width="16" height="8" rx="2" fill="#2563eb" opacity=".15" stroke="#2563eb" stroke-width="1.5"/>
+      <path d="M6 10h8M10 7v6" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    Blowgorithm
+  </div>
+  <div class="menu-item" onclick="newFile()">
+    <svg viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
+    New
+  </div>
+  <div class="menu-item" onclick="openFile()">
+    <svg viewBox="0 0 16 16" fill="none"><path d="M2 4h5l1.5 2H14v7H2V4z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+    Open
+  </div>
+  <div class="menu-item" onclick="saveFile()">
+    <svg viewBox="0 0 16 16" fill="none"><path d="M3 2h8l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><rect x="5" y="9" width="6" height="5" rx=".5" stroke="currentColor" stroke-width="1.2"/><rect x="5" y="2" width="5" height="4" rx=".5" stroke="currentColor" stroke-width="1.2"/></svg>
+    Save
+  </div>
+  <div class="menu-sep"></div>
+  <div class="menu-item" onclick="fitView()">
+    <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
+    Fit
+  </div>
+  <div class="menu-item" id="zoom-in-btn" onclick="zoom(1.15)">
+    <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 7h4M7 5v4M10.5 10.5l3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    Zoom In
+  </div>
+  <div class="menu-item" onclick="zoom(1/1.15)">
+    <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 7h4M10.5 10.5l3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    Zoom Out
+  </div>
+  <div class="menu-sep"></div>
+  <div class="menu-item" onclick="deleteSelected()">
+    <svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M5 4l.5 9h5l.5-9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Delete
+  </div>
+  <button id="run-main" onclick="runFlowchart()">
+    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 2.5l10 5.5-10 5.5V2.5z"/></svg>
+    Run
+  </button>
+  <button id="step-main" onclick="startStepRun()">
+    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3 2.5l7 5.5-7 5.5V2.5z"/><rect x="11" y="2.5" width="2.5" height="11" rx="1"/></svg>
+    Step
+  </button>
+  <div style="width:8px"></div>
+  <div class="menu-item" onclick="openChatWin()" title="เปิด Chat Console">
+    <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M5 6l2 2-2 2M8 10h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Console
+  </div>
+  <div class="menu-item" onclick="openTurtleWin()" title="เปิด Turtle Graphics">
+    <svg viewBox="0 0 16 16" fill="none"><ellipse cx="8" cy="9" rx="5" ry="4" stroke="currentColor" stroke-width="1.2"/><path d="M8 5V3M5 6L3 4M11 6l2-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="8" cy="9" r="1.5" fill="currentColor" opacity=".5"/></svg>
+    Turtle
+  </div>
+  <div class="menu-item" onclick="openPyWin()" title="Python Code Generator">
+    <svg viewBox="0 0 16 16" fill="none"><path d="M5 2h3a2 2 0 012 2v1H4V4a2 2 0 011-2z" stroke="currentColor" stroke-width="1.2"/><path d="M11 9H8a2 2 0 00-2 2v1h6v-1a2 2 0 00-1-2z" stroke="currentColor" stroke-width="1.2"/><circle cx="7" cy="4.5" r=".8" fill="currentColor"/><circle cx="9" cy="11.5" r=".8" fill="currentColor"/></svg>
+    Python
+  </div>
+  <div class="menu-sep"></div>
+  <div class="menu-item" id="tutorial-btn" onclick="openTutorialWin()" title="Tutorial">
+    <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M8 7v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="5" r=".8" fill="currentColor"/></svg>
+    Tutorial
+  </div>
+  <!-- <div class="menu-item" id="theme-toggle-btn" onclick="toggleThemePicker()" title="Change Theme">
+    <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="4" stroke="currentColor" stroke-width="1.2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    Theme
+  </div> -->
+</div>
+
+<!-- LAYOUT -->
+<div id="layout">
+
+  <!-- TOOLBAR -->
+  <div id="toolbar">
+    <div class="tb-section">
+      <div class="tb-label">Tools</div>
+      <div class="tb-btn active" data-mode="select" onclick="setMode('select')">
+        <div class="shape-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 2l10 6-5 1-3 5V2z" stroke="#6b6860" stroke-width="1.2" stroke-linejoin="round"/></svg>
+        </div>
+        Select
+      </div>
+    </div>
+    <div class="tb-sep"></div>
+    <div class="tb-section">
+      <div class="tb-label">Shapes</div>
+
+      <div class="tb-btn" data-mode="add:start" onclick="setMode('add:start')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><ellipse cx="15" cy="9" rx="13" ry="7" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/></svg>
+        </div>
+        Terminal
+      </div>
+
+      <div class="tb-btn" data-mode="add:process" onclick="setMode('add:process')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><rect x="1" y="3" width="28" height="12" rx="2" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/></svg>
+        </div>
+        Process
+      </div>
+
+      <div class="tb-btn" data-mode="add:decision" onclick="setMode('add:decision')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><polygon points="15,1 29,9 15,17 1,9" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.5"/></svg>
+        </div>
+        Decision
+      </div>
+
+      <div class="tb-btn" data-mode="add:io" onclick="setMode('add:io')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><polygon points="5,3 29,3 25,15 1,15" fill="#fce7f3" stroke="#db2777" stroke-width="1.5"/></svg>
+        </div>
+        Input
+      </div>
+
+      <div class="tb-btn" data-mode="add:output_only" onclick="setMode('add:output_only')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><polygon points="5,3 29,3 25,15 1,15" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5"/></svg>
+        </div>
+        Output (Print)
+      </div>
+
+      <div class="tb-btn" data-mode="add:call" onclick="setMode('add:call')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><rect x="1" y="3" width="28" height="12" rx="2" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/><line x1="5" y1="3" x2="5" y2="15" stroke="#7c3aed" stroke-width="1.2"/><line x1="25" y1="3" x2="25" y2="15" stroke="#7c3aed" stroke-width="1.2"/></svg>
+        </div>
+        Sub-process
+      </div>
+
+      <div class="tb-btn" data-mode="add:declare" onclick="setMode('add:declare')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><rect x="1" y="3" width="28" height="12" rx="2" fill="#e0f7fa" stroke="#0891b2" stroke-width="1.5"/><line x1="1" y1="6" x2="29" y2="6" stroke="#0891b2" stroke-width="1"/><line x1="1" y1="12" x2="29" y2="12" stroke="#0891b2" stroke-width="1"/></svg>
+        </div>
+        Declare
+      </div>
+    </div>
+
+    <div class="tb-sep"></div>
+    <div class="tb-section">
+      <div class="tb-label">Loops</div>
+
+      <div class="tb-btn" data-mode="add:for_loop" onclick="setMode('add:for_loop')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><polygon points="5,1 25,1 29,9 25,17 5,17 1,9" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/></svg>
+        </div>
+        For Loop
+      </div>
+
+      <div class="tb-btn" data-mode="add:while_loop" onclick="setMode('add:while_loop')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><polygon points="5,1 25,1 29,9 25,17 5,17 1,9" fill="#f0fdfa" stroke="#0d9488" stroke-width="1.5"/></svg>
+        </div>
+        While Loop
+      </div>
+
+      <div class="tb-btn" data-mode="add:do_while" onclick="setMode('add:do_while')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><rect x="1" y="1" width="28" height="16" rx="2" fill="#faf5ff" stroke="#9333ea" stroke-width="1.5"/><line x1="1" y1="13" x2="29" y2="13" stroke="#9333ea" stroke-width="1" stroke-opacity="0.7"/></svg>
+        </div>
+        Do...While
+      </div>
+    </div>
+
+    <div class="tb-sep"></div>
+    <div class="tb-section">
+      <div class="tb-label">Turtle — Move</div>
+
+      <div class="tb-btn" data-mode="add:turtle_forward" onclick="setMode('add:turtle_forward')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><rect x="1" y="3" width="28" height="12" rx="4" fill="#dcfce7" stroke="#15803d" stroke-width="1.5"/><polygon points="15,5 19,13 11,13" fill="#15803d" opacity="0.7"/></svg>
+        </div>
+        Forward
+      </div>
+
+      <div class="tb-btn" data-mode="add:turtle_left" onclick="setMode('add:turtle_left')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><rect x="1" y="3" width="28" height="12" rx="4" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/><text x="15" y="12" text-anchor="middle" font-size="9" fill="#059669">↺</text></svg>
+        </div>
+        Turn Left
+      </div>
+
+      <div class="tb-btn" data-mode="add:turtle_right" onclick="setMode('add:turtle_right')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><rect x="1" y="3" width="28" height="12" rx="4" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/><text x="15" y="12" text-anchor="middle" font-size="9" fill="#059669">↻</text></svg>
+        </div>
+        Turn Right
+      </div>
+    </div>
+
+    <div class="tb-sep"></div>
+    <div class="tb-section">
+      <div class="tb-label">Turtle — Pen</div>
+
+      <div class="tb-btn" data-mode="add:turtle_penup" onclick="setMode('add:turtle_penup')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><rect x="1" y="3" width="28" height="12" rx="4" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/><text x="15" y="12" text-anchor="middle" font-size="8" fill="#0284c7">PEN↑</text></svg>
+        </div>
+        Pen Up
+      </div>
+
+      <div class="tb-btn" data-mode="add:turtle_pendown" onclick="setMode('add:turtle_pendown')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><rect x="1" y="3" width="28" height="12" rx="4" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/><text x="15" y="12" text-anchor="middle" font-size="8" fill="#0284c7">PEN↓</text></svg>
+        </div>
+        Pen Down
+      </div>
+
+      <div class="tb-btn" data-mode="add:turtle_pencolor" onclick="setMode('add:turtle_pencolor')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><rect x="1" y="3" width="28" height="12" rx="4" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/><circle cx="15" cy="9" r="4" fill="#7c3aed" opacity="0.6"/></svg>
+        </div>
+        Pen Color
+      </div>
+    </div>
+
+    <div class="tb-sep"></div>
+    <div class="tb-section">
+      <div class="tb-label">Turtle — Fill</div>
+
+      <div class="tb-btn" data-mode="add:turtle_fillcolor" onclick="setMode('add:turtle_fillcolor')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><rect x="1" y="3" width="28" height="12" rx="4" fill="#faf5ff" stroke="#9333ea" stroke-width="1.5"/><rect x="10" y="6" width="10" height="6" rx="1" fill="#9333ea" opacity="0.6"/></svg>
+        </div>
+        Fill Color
+      </div>
+
+      <div class="tb-btn" data-mode="add:turtle_beginfill" onclick="setMode('add:turtle_beginfill')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><rect x="1" y="3" width="28" height="12" rx="4" fill="#fce7f3" stroke="#db2777" stroke-width="1.5"/><polygon points="11,6 19,9 11,12" fill="#db2777" opacity="0.6"/></svg>
+        </div>
+        Begin Fill
+      </div>
+
+      <div class="tb-btn" data-mode="add:turtle_endfill" onclick="setMode('add:turtle_endfill')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><rect x="1" y="3" width="28" height="12" rx="4" fill="#fce7f3" stroke="#db2777" stroke-width="1.5"/><polygon points="19,6 11,9 19,12" fill="#db2777" opacity="0.6"/></svg>
+        </div>
+        End Fill
+      </div>
+    </div>
+
+    <div class="tb-sep"></div>
+    <div class="tb-section">
+      <div class="tb-label">Turtle — Util</div>
+
+      <div class="tb-btn" data-mode="add:turtle_home" onclick="setMode('add:turtle_home')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><rect x="1" y="3" width="28" height="12" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/><text x="15" y="12" text-anchor="middle" font-size="9" fill="#d97706">⌂</text></svg>
+        </div>
+        Home
+      </div>
+
+      <div class="tb-btn" data-mode="add:turtle_clear" onclick="setMode('add:turtle_clear')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><rect x="1" y="3" width="28" height="12" rx="4" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/><path d="M12 6l6 6M18 6l-6 6" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        Clear
+      </div>
+    </div>
+
+    <div class="tb-sep"></div>
+    <div class="tb-section">
+      <div class="tb-label">Edit</div>
+      <div class="tb-action" onclick="deleteSelected()">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M5 4l.5 9h5l.5-9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        ลบที่เลือก
+      </div>
+      <div class="tb-action" onclick="clearAll()">
+        <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        ล้างทั้งหมด
+      </div>
+    </div>
+
+    <div style="margin-top:auto;padding:12px 10px;border-top:1px solid var(--border)">
+      <div style="font-size:10px;color:var(--text3);line-height:1.5">
+        <b style="color:var(--text2)">Tips:</b><br>
+        ดับเบิลคลิก shape เพื่อแก้ไข<br>
+        คลิกจุดสีบน shape เพื่อเชื่อมต่อ<br>
+        ลาก shape เพื่อย้าย<br>
+        Del = ลบ shape<br>
+        คลิกเส้น = ลบการเชื่อมต่อ
+      </div>
+    </div>
+  </div>
+
+  <!-- CANVAS -->
+  <div id="canvas-wrap">
+    <svg id="canvas" width="4000" height="4000">
+      <defs>
+        <marker id="ah" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M1 1L11 6L1 11" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+        <marker id="ah-sel" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M1 1L11 6L1 11" fill="none" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+        <marker id="ah-run" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M1 1L11 6L1 11" fill="none" stroke="#16a34a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <g id="conn-layer"></g>
+      <g id="node-layer"></g>
+      <g id="temp-conn-layer"></g>
+    </svg>
+  </div>
+
+  <!-- RIGHT PANEL (output only) -->
+  <div id="right">
+    <div id="output-section" style="height:100%;border-top:none;">
+      <div id="output-bar">
+        <span>Output</span>
+        <div class="out-btn" onclick="clearOutput()">Clear</div>
+      </div>
+      <div id="output-log"></div>
+    </div>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div id="status">
+  <span id="status-msg">พร้อมใช้งาน — เลือก shape แล้วคลิกบน canvas</span>
+  <span id="coord-display"></span>
+  <span id="zoom-display">100%</span>
+</div>
+
+<!-- STEP DEBUGGER BAR -->
+<div id="step-bar">
+  <div id="step-bar-left">
+    <span id="step-node-badge"></span>
+    <span id="step-node-label"></span>
+  </div>
+  <div id="step-bar-center">
+    <div id="step-vars-wrap">
+      <span class="step-vars-title">Variables:</span>
+      <span id="step-vars"></span>
+    </div>
+  </div>
+  <div id="step-bar-right">
+    <button id="step-btn-next" onclick="stepNext()" title="Next Step (F8)">
+      <svg viewBox="0 0 16 16" fill="currentColor" width="12" height="12"><path d="M3 2.5l7 5.5-7 5.5V2.5z"/><rect x="11" y="2.5" width="2.5" height="11" rx="1"/></svg>
+      Next
+    </button>
+    <button id="step-btn-continue" onclick="stepContinue()" title="Continue (F5)">
+      <svg viewBox="0 0 16 16" fill="currentColor" width="12" height="12"><path d="M3 2.5l10 5.5-10 5.5V2.5z"/></svg>
+      Continue
+    </button>
+    <button id="step-btn-stop" onclick="stepStop()" title="Stop (Esc)">
+      <svg viewBox="0 0 16 16" fill="currentColor" width="12" height="12"><rect x="3" y="3" width="10" height="10" rx="1.5"/></svg>
+      Stop
+    </button>
+  </div>
+</div>
+
+<!-- PROPERTIES FLOATING WINDOW -->
+<div class="fw" id="props-win">
+  <div class="fw-titlebar" id="props-win-bar">
+    <div class="fw-dots">
+      <div class="fw-dot red" onclick="closePropsWin()" title="ปิด"></div>
+      <div class="fw-dot yellow" onclick="closePropsWin()" title="ปิด"></div>
+      <div class="fw-dot green" onclick="closePropsWin()" title="ปิด"></div>
+    </div>
+    <div class="fw-title" id="props-win-title">Properties</div>
+  </div>
+  <div id="props-body" style="padding:14px;overflow-y:auto;flex:1;min-width:0;"></div>
+</div>
+
+<!-- CUSTOM DIALOG -->
+<div id="dialog-overlay">
+  <div id="dialog-box">
+    <div id="dialog-content">
+      <div id="dialog-icon" class="info">ℹ</div>
+      <div>
+        <div id="dialog-title">แจ้งเตือน</div>
+        <div id="dialog-msg"></div>
+      </div>
+    </div>
+    <div id="dialog-footer">
+      <button class="dlg-btn secondary" id="dialog-cancel-btn" onclick="dialogCancel()">ยกเลิก</button>
+      <button class="dlg-btn primary" id="dialog-ok-btn" onclick="dialogOk()">ตกลง</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT FLOATING WINDOW -->
+<div class="fw" id="chat-win">
+  <div class="fw-titlebar" id="chat-win-bar">
+    <div class="fw-dots">
+      <div class="fw-dot red" onclick="closeChatWin()" title="ปิด"></div>
+      <div class="fw-dot yellow" onclick="minimizeChatWin()" title="ย่อ"></div>
+      <div class="fw-dot green" onclick="maximizeChatWin()" title="ขยาย"></div>
+    </div>
+    <div class="fw-title">Console</div>
+  </div>
+  <div id="chat-win-toolbar">
+    <button onclick="clearChat()">Clear</button>
+    <div class="sep"></div>
+    <button onclick="copyChat()">Copy</button>
+  </div>
+  <div class="fw-body">
+    <div id="chat-messages"></div>
+    <div id="chat-input-bar">
+      <div id="chat-input-hint">⌨️ <span id="chat-input-hint-text">ป้อนค่าสำหรับตัวแปร:</span></div>
+      <div class="chat-input-row">
+        <input id="chat-input" type="text" placeholder="พิมพ์ค่าที่นี่…" autocomplete="off">
+        <button id="chat-send-btn" onclick="chatConfirm()">ส่ง</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TURTLE FLOATING WINDOW -->
+<div class="fw" id="turtle-win">
+  <div class="fw-titlebar" id="turtle-win-bar">
+    <div class="fw-dots">
+      <div class="fw-dot red" onclick="closeTurtleWin()" title="ปิด"></div>
+      <div class="fw-dot yellow" onclick="minimizeTurtleWin()" title="ย่อ"></div>
+      <div class="fw-dot green" onclick="maximizeTurtleWin()" title="ขยาย"></div>
+    </div>
+    <div class="fw-title">Turtle Graphics</div>
+  </div>
+  <div id="turtle-win-toolbar">
+    <button onclick="clearTurtle()">Clear</button>
+    <div class="sep"></div>
+    <button onclick="homeTurtle()">Home</button>
+    <div class="sep"></div>
+    <button onclick="turtleFitView()" title="Fit to Window">⊡ Fit</button>
+    <div class="sep"></div>
+    <button onclick="toggleTurtleVisible()">Toggle</button>
+  </div>
+  <div class="fw-body" id="turtle-win-body" style="padding:0;overflow:hidden;flex:1;position:relative;">
+    <canvas id="turtle-canvas"></canvas>
+  </div>
+</div>
+
+<div id="tb-ghost"></div>
+
+<!-- THEME PICKER -->
+<div id="theme-picker">
+  <div class="theme-picker-label">Theme</div>
+
+  <div class="theme-opt active" data-theme="light" onclick="setTheme('light')">
+    <div class="theme-swatch">
+      <span style="background:#f5f5f2"></span>
+      <span style="background:#ffffff"></span>
+      <span style="background:#2563eb"></span>
+      <span style="background:#e0ddd8"></span>
+    </div>
+    <span class="theme-opt-name">Light</span>
+    <svg class="theme-opt-check" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+
+  <div class="theme-opt" data-theme="dark" onclick="setTheme('dark')">
+    <div class="theme-swatch">
+      <span style="background:#0f1117"></span>
+      <span style="background:#1a1d27"></span>
+      <span style="background:#4f7eff"></span>
+      <span style="background:#2a2e3e"></span>
+    </div>
+    <span class="theme-opt-name">Dark</span>
+    <svg class="theme-opt-check" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+
+  <div class="theme-opt" data-theme="dracula" onclick="setTheme('dracula')">
+    <div class="theme-swatch">
+      <span style="background:#282a36"></span>
+      <span style="background:#1e1f29"></span>
+      <span style="background:#ff79c6"></span>
+      <span style="background:#bd93f9"></span>
+    </div>
+    <span class="theme-opt-name">Dracula</span>
+    <svg class="theme-opt-check" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+
+  <div class="theme-opt" data-theme="rich" onclick="setTheme('rich')">
+    <div class="theme-swatch">
+      <span style="background:#0a0c14"></span>
+      <span style="background:#0f1221"></span>
+      <span style="background:#c9a84c"></span>
+      <span style="background:#1e2340"></span>
+    </div>
+    <span class="theme-opt-name">Rich</span>
+    <svg class="theme-opt-check" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+</div>
+
+<!-- TUTORIAL WINDOW -->
+<div id="tutorial-win">
+  <div id="tutorial-overlay"></div>
+  <div id="tutorial-modal">
+
+    <!-- Header -->
+    <div id="tutorial-header">
+      <div id="tutorial-logo">
+        <svg viewBox="0 0 20 20" fill="none" width="20" height="20">
+          <rect x="2" y="6" width="16" height="8" rx="2" fill="#2563eb" opacity=".15" stroke="#2563eb" stroke-width="1.5"/>
+          <path d="M6 10h8M10 7v6" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span>Blowgorithm Tutorial</span>
+      </div>
+      <button class="tutorial-close-btn" onclick="closeTutorialWin()" title="Close (Esc)">
+        <svg viewBox="0 0 14 14" fill="none" width="13" height="13"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <!-- Progress bar -->
+    <div id="tutorial-progress-wrap">
+      <div id="tutorial-progress-bar"></div>
+    </div>
+
+    <!-- Two-column body -->
+    <div id="tutorial-body">
+
+      <!-- Left: illustration + step label -->
+      <div id="tutorial-left">
+        <div id="tutorial-illustration"></div>
+        <div id="tutorial-step-label"></div>
+      </div>
+
+      <!-- Right: text content -->
+      <div id="tutorial-right">
+        <div id="tutorial-title"></div>
+        <div id="tutorial-desc"></div>
+        <div id="tutorial-tips"></div>
+      </div>
+
+    </div>
+
+    <!-- Footer: prev | dots | next -->
+    <div id="tutorial-footer">
+      <button id="tutorial-btn-prev" onclick="tutorialPrev()">
+        <svg viewBox="0 0 14 14" fill="none" width="11" height="11"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Prev
+      </button>
+      <div id="tutorial-dots"></div>
+      <button id="tutorial-btn-next" onclick="tutorialNext()">
+        Next
+        <svg viewBox="0 0 14 14" fill="none" width="11" height="11"><path d="M5 2l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- NODE CONTEXT MENU -->
+<div id="node-ctx-menu">
+  <div class="ctx-item" id="ctx-properties">
+    <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3.5l2 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Properties
+  </div>
+  <div class="ctx-item" id="ctx-duplicate">
+    <svg viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M3 11V3h8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Duplicate
+  </div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item danger" id="ctx-remove">
+    <svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M5 4l.5 9h5l.5-9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Remove
+  </div>
+</div>
+
+<!-- PYTHON CODE GENERATOR WINDOW -->
+<div class="fw" id="py-win">
+  <div class="fw-titlebar" id="py-win-bar">
+    <div class="fw-dots">
+      <div class="fw-dot red"    onclick="closePyWin()"    title="ปิด"></div>
+      <div class="fw-dot yellow" onclick="minimizePyWin()" title="ย่อ"></div>
+      <div class="fw-dot green"  onclick="maximizePyWin()" title="ขยาย"></div>
+    </div>
+    <div class="fw-title">Python Code Generator</div>
+  </div>
+  <div id="py-win-toolbar">
+    <button onclick="generatePython()" id="py-gen-btn">
+      <svg viewBox="0 0 14 14" fill="none" width="12" height="12" style="vertical-align:-1px"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Generate
+    </button>
+    <div class="sep"></div>
+    <button onclick="copyPython()" id="py-copy-btn" disabled>Copy</button>
+    <div class="sep"></div>
+    <button onclick="downloadPython()" id="py-dl-btn" disabled>Download .py</button>
+    <div class="sep"></div>
+    <button onclick="clearPython()">Clear</button>
+  </div>
+  <div id="py-win-body">
+    <div id="py-placeholder">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <rect x="4" y="4" width="28" height="28" rx="5" fill="#f0f4ff" stroke="#6366f1" stroke-width="1.5"/>
+        <path d="M11 12h7a3 3 0 013 3v2H9v-2a3 3 0 012-3z" stroke="#6366f1" stroke-width="1.2"/>
+        <path d="M25 24h-7a3 3 0 01-3-3v-2h12v2a3 3 0 01-2 3z" stroke="#6366f1" stroke-width="1.2"/>
+        <circle cx="14" cy="13.5" r="1" fill="#6366f1"/>
+        <circle cx="22" cy="24.5" r="1" fill="#6366f1"/>
+      </svg>
+      <div>คลิก <b>Generate</b> เพื่อสร้างโค้ด Python<br>จาก Flowchart ปัจจุบัน</div>
+    </div>
+    <pre id="py-code"></pre>
+  </div>
+</div>
+
+<script src="js/state.js"></script>
+<script src="js/history.js"></script>
+<script src="js/nodes.js"></script>
+<script src="js/canvas.js"></script>
+<script src="js/connections.js"></script>
+<script src="js/turtle.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/events.js"></script>
+<script src="js/interpreter.js"></script>
+<script src="js/python-gen.js"></script>
+<script src="js/tutorial-theme.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
