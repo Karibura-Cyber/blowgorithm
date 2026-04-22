@@ -36,6 +36,15 @@
     <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
     Fit
   </div>
+  <div class="menu-item" onclick="autoLayout()" title="จัด Node และ Connection อัตโนมัติ (Ctrl+L)">
+    <svg viewBox="0 0 16 16" fill="none">
+      <rect x="5" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/>
+      <rect x="1" y="11" width="5" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/>
+      <rect x="10" y="11" width="5" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/>
+      <path d="M8 5v2.5M8 7.5H3.5V11M8 7.5H12.5V11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Auto Layout
+  </div>
   <div class="menu-item" id="zoom-in-btn" onclick="zoom(1.15)">
     <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 7h4M7 5v4M10.5 10.5l3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
     Zoom In
@@ -619,6 +628,7 @@
 <script src="js/events.js"></script>
 <script src="js/interpreter.js"></script>
 <script src="js/python-gen.js"></script>
+<script src="js/auto-layout.js"></script>
 <script src="js/tutorial-theme.js"></script>
 <script src="js/main.js"></script>
 </body>
