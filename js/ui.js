@@ -482,31 +482,10 @@ document.addEventListener('mousedown', e => {
 //  FILE OPERATIONS
 // ═══════════════════════════════════════════════
 function saveFile() {
-  openSaveDialog();
-}
-
-function openSaveDialog() {
-  const overlay = document.getElementById('save-overlay');
-  const input = document.getElementById('save-filename-input');
-  input.value = currentFileName || 'flowchart';
-  overlay.classList.add('open');
-  // Select all text so the user can immediately type a new name
-  setTimeout(() => { input.focus(); input.select(); }, 60);
-}
-
-function closeSaveDialog() {
-  document.getElementById('save-overlay').classList.remove('open');
-}
-
-function confirmSaveFile() {
-  const raw = document.getElementById('save-filename-input').value.trim();
-  const name = raw || 'flowchart';
-  // Sanitise: remove characters that are unsafe in file names
-  const safe = name.replace(/[\\/:*?"<>|]/g, '_');
+  const safe = (currentFileName || 'flowchart').replace(/[\\/:*?"<>|]/g, '_');
   currentFileName = safe;
   document.title = 'Blowgorithm — ' + safe;
-  closeSaveDialog();
-
+  syncFilenameInput();
   const data = { version: 1, nextId, nodes: nodes.map(n => ({ ...n, _g: undefined })), conns };
   const json = JSON.stringify(data, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
@@ -517,17 +496,6 @@ function confirmSaveFile() {
   URL.revokeObjectURL(a.href);
   statusMsg.textContent = 'บันทึกไฟล์: ' + safe + '.flow';
 }
-
-// Close save dialog on overlay click or Escape
-document.getElementById('save-overlay').addEventListener('mousedown', e => {
-  if (e.target === document.getElementById('save-overlay')) closeSaveDialog();
-});
-document.addEventListener('keydown', e => {
-  const overlay = document.getElementById('save-overlay');
-  if (!overlay.classList.contains('open')) return;
-  if (e.key === 'Escape') { e.preventDefault(); closeSaveDialog(); }
-  if (e.key === 'Enter')  { e.preventDefault(); confirmSaveFile(); }
-});
 
 function openFile() {
   const input = document.createElement('input');
@@ -547,6 +515,7 @@ function openFile() {
         selId = null;
         currentFileName = file.name.replace(/\.flow$/, '');
         document.title = 'Blowgorithm — ' + currentFileName;
+        syncFilenameInput();
         nodeLayer.innerHTML = ''; connLayer.innerHTML = '';
         selIds = new Set(); selId = null;
         nodes.forEach(n => renderNode(n));
@@ -657,4 +626,87 @@ function clearChat() {
 }
 function copyChat() {
   navigator.clipboard.writeText(chatText.join('\n')).catch(() => {});
+}
+
+// ═══════════════════════════════════════════════
+//  INLINE FILENAME EDITING
+// ═══════════════════════════════════════════════
+(function () {
+  const input = document.getElementById('filename-input');
+  if (!input) return;
+
+  // Sync currentFileName → input on load
+  input.value = currentFileName || 'flowchart';
+
+  // Auto-size the input to its content
+  function resizeInput() {
+    const tmp = document.createElement('span');
+    tmp.style.cssText = 'position:fixed;visibility:hidden;font:500 13px/1 var(--font);white-space:pre;';
+    tmp.textContent = input.value || ' ';
+    document.body.appendChild(tmp);
+    const w = Math.max(60, Math.min(200, tmp.offsetWidth + 8));
+    input.style.width = w + 'px';
+    document.body.removeChild(tmp);
+  }
+  resizeInput();
+
+  input.addEventListener('input', () => {
+    resizeInput();
+  });
+
+  input.addEventListener('blur', () => {
+    const raw = input.value.trim().replace(/[\\/:*?"<>|]/g, '_') || 'flowchart';
+    input.value = raw;
+    currentFileName = raw;
+    document.title = 'Blowgorithm — ' + raw;
+    resizeInput();
+    const hf = document.getElementById('header-filename');
+    if (hf) hf.textContent = raw;
+    statusMsg.textContent = 'ชื่อไฟล์: ' + raw + '.flow';
+  });
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') { input.value = currentFileName; input.blur(); }
+  });
+
+  // Click on the wrap focuses the input
+  const wrap = document.getElementById('filename-wrap');
+  wrap.addEventListener('click', e => {
+    if (e.target !== input) { input.focus(); input.select(); }
+  });
+
+  // Keep input in sync when currentFileName changes externally (openFile, etc.)
+  const _origOpenFile = window.openFile;
+  // (patched in openFile function below via syncFilenameInput)
+})();
+
+/** Call this whenever currentFileName is changed externally. */
+function syncFilenameInput() {
+  const input = document.getElementById('filename-input');
+  if (input) {
+    input.value = currentFileName || 'flowchart';
+    const evt = new Event('input');
+    input.dispatchEvent(evt);
+  }
+  const hf = document.getElementById('header-filename');
+  if (hf) hf.textContent = currentFileName || 'flowchart';
+}
+
+// ═══════════════════════════════════════════════
+//  SIDEBAR COLLAPSE / EXPAND
+// ═══════════════════════════════════════════════
+let _toolbarCollapsed = false;
+let _outputCollapsed  = false;
+
+function toggleToolbar() {
+  _toolbarCollapsed = !_toolbarCollapsed;
+  document.getElementById('toolbar').classList.toggle('collapsed', _toolbarCollapsed);
+  document.getElementById('toolbar-toggle').classList.toggle('active', _toolbarCollapsed);
+}
+
+function toggleOutputPanel() {
+  _outputCollapsed = !_outputCollapsed;
+  document.getElementById('right').classList.toggle('collapsed', _outputCollapsed);
+  document.getElementById('output-toggle').classList.toggle('active', _outputCollapsed);
 }

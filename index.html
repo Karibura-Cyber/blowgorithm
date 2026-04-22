@@ -12,82 +12,110 @@
 
 <!-- HEADER -->
 <div id="header">
-  <div id="logo">
-    <svg viewBox="0 0 20 20" fill="none">
-      <rect x="2" y="6" width="16" height="8" rx="2" fill="#2563eb" opacity=".15" stroke="#2563eb" stroke-width="1.5"/>
-      <path d="M6 10h8M10 7v6" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-    Blowgorithm
+
+  <!-- LEFT: Logo + File section -->
+  <div id="header-left">
+    <button class="hdr-icon-btn" id="toolbar-toggle" onclick="toggleToolbar()" title="Toggle Shapes Panel">
+      <svg viewBox="0 0 16 16" fill="none" width="16" height="16">
+        <rect x="2" y="3" width="4" height="10" rx="1" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M9 5h5M9 8h5M9 11h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div id="logo">
+      <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+        <rect x="2" y="7" width="9" height="6" rx="2" fill="var(--accent)" opacity=".2" stroke="var(--accent)" stroke-width="1.5"/>
+        <rect x="13" y="3" width="9" height="6" rx="2" fill="var(--accent)" opacity=".12" stroke="var(--accent)" stroke-width="1.3"/>
+        <rect x="13" y="15" width="9" height="6" rx="2" fill="var(--accent)" opacity=".12" stroke="var(--accent)" stroke-width="1.3"/>
+        <path d="M11 10h2M17 9v6" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/>
+        <circle cx="17" cy="6" r="1.5" fill="var(--accent)" opacity=".7"/>
+        <circle cx="17" cy="18" r="1.5" fill="var(--accent)" opacity=".7"/>
+      </svg>
+      <span class="logo-text">Blowgorithm</span>
+      <span class="logo-sep">/</span>
+      <span id="header-filename" class="logo-filename">flowchart</span>
+    </div>
+    <div class="hdr-sep"></div>
+    <!-- Inline editable filename -->
+    <div id="filename-wrap" title="Click to rename file">
+      <svg viewBox="0 0 14 14" fill="none" width="12" height="12" id="filename-icon">
+        <path d="M2 2h6l3 3v7H2V2z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+        <path d="M8 2v3h3" stroke="currentColor" stroke-width="1.2"/>
+      </svg>
+      <input id="filename-input" type="text" value="flowchart" spellcheck="false" autocomplete="off" title="Click to rename" />
+      <span id="filename-ext">.flow</span>
+      <svg id="filename-edit-icon" viewBox="0 0 12 12" fill="none" width="11" height="11">
+        <path d="M8.5 1.5l2 2-6.5 6.5H2v-2L8.5 1.5z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="hdr-sep"></div>
+    <!-- File actions -->
+    <div class="hdr-group">
+      <button class="hdr-btn" onclick="newFile()" title="New (Ctrl+N)">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.3"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.3"/><path d="M6 9h4M8 7v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        <span class="hdr-btn-label">New</span>
+      </button>
+      <button class="hdr-btn" onclick="openFile()" title="Open">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M2 4h5l1.5 2H14v7H2V4z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+        <span class="hdr-btn-label">Open</span>
+      </button>
+      <button class="hdr-btn" onclick="saveFile()" title="Save (Ctrl+S)">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M3 2h8l3 3v9H3V2z" stroke="currentColor" stroke-width="1.3"/><rect x="5" y="9" width="6" height="5" rx=".5" stroke="currentColor" stroke-width="1.2"/><rect x="5" y="2" width="5" height="4" rx=".5" stroke="currentColor" stroke-width="1.2"/></svg>
+        <span class="hdr-btn-label">Save</span>
+      </button>
+      <button class="hdr-btn" onclick="autoLayout()" title="Auto Layout (Ctrl+L)">
+        <svg viewBox="0 0 16 16" fill="none"><rect x="5" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="11" width="5" height="4" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="10" y="11" width="5" height="4" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v2.5M8 7.5H3.5V11M8 7.5H12.5V11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="hdr-btn-label">Layout</span>
+      </button>
+      <button class="hdr-btn" onclick="zoom(1.15)" title="Zoom In">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 7h4M7 5v4M10.5 10.5l3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span class="hdr-btn-label">In</span>
+      </button>
+      <button class="hdr-btn" onclick="zoom(1/1.15)" title="Zoom Out">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M5 7h4M10.5 10.5l3 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span class="hdr-btn-label">Out</span>
+      </button>
+    </div>
   </div>
-  <div class="menu-item" onclick="newFile()">
-    <svg viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><path d="M10 2v3h3" stroke="currentColor" stroke-width="1.2"/></svg>
-    New
+
+  <!-- RIGHT: Run + Panels -->
+  <div id="header-right">
+    <button id="run-main" onclick="runFlowchart()">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 2.5l10 5.5-10 5.5V2.5z"/></svg>
+      <span class="hdr-btn-label">Run</span>
+    </button>
+    <button id="step-main" onclick="startStepRun()">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3 2.5l7 5.5-7 5.5V2.5z"/><rect x="11" y="2.5" width="2.5" height="11" rx="1"/></svg>
+      <span class="hdr-btn-label">Step</span>
+    </button>
+    <div class="hdr-sep"></div>
+    <div class="hdr-group">
+      <button class="hdr-btn" onclick="openChatWin()" title="Console">
+        <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M5 6l2 2-2 2M8 10h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="hdr-btn-label">Console</span>
+      </button>
+      <button class="hdr-btn" onclick="openTurtleWin()" title="Turtle Graphics">
+        <svg viewBox="0 0 16 16" fill="none"><ellipse cx="8" cy="9" rx="5" ry="4" stroke="currentColor" stroke-width="1.3"/><path d="M8 5V3M5 6L3 4M11 6l2-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="8" cy="9" r="1.5" fill="currentColor" opacity=".5"/></svg>
+        <span class="hdr-btn-label">Turtle</span>
+      </button>
+      <button class="hdr-btn" onclick="openPyWin()" title="Python Generator">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M5 2h3a2 2 0 012 2v1H4V4a2 2 0 011-2z" stroke="currentColor" stroke-width="1.3"/><path d="M11 9H8a2 2 0 00-2 2v1h6v-1a2 2 0 00-1-2z" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="4.5" r=".8" fill="currentColor"/><circle cx="9" cy="11.5" r=".8" fill="currentColor"/></svg>
+        <span class="hdr-btn-label">Python</span>
+      </button>
+      <button class="hdr-btn" id="tutorial-btn" onclick="openTutorialWin()" title="Tutorial">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M8 7v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="5" r=".8" fill="currentColor"/></svg>
+        <span class="hdr-btn-label">Help</span>
+      </button>
+    </div>
+    <div class="hdr-sep"></div>
+    <button class="hdr-icon-btn" id="output-toggle" onclick="toggleOutputPanel()" title="Toggle Output Panel">
+      <svg viewBox="0 0 16 16" fill="none" width="16" height="16">
+        <rect x="2" y="2" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M2 9h12" stroke="currentColor" stroke-width="1.3"/>
+        <rect x="4" y="11" width="3" height="2" rx=".5" fill="currentColor" opacity=".5"/>
+      </svg>
+    </button>
   </div>
-  <div class="menu-item" onclick="openFile()">
-    <svg viewBox="0 0 16 16" fill="none"><path d="M2 4h5l1.5 2H14v7H2V4z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
-    Open
-  </div>
-  <div class="menu-item" onclick="saveFile()">
-    <svg viewBox="0 0 16 16" fill="none"><path d="M3 2h8l3 3v9H3V2z" stroke="currentColor" stroke-width="1.2"/><rect x="5" y="9" width="6" height="5" rx=".5" stroke="currentColor" stroke-width="1.2"/><rect x="5" y="2" width="5" height="4" rx=".5" stroke="currentColor" stroke-width="1.2"/></svg>
-    Save
-  </div>
-  <div class="menu-sep"></div>
-  <div class="menu-item" onclick="fitView()">
-    <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2"/></svg>
-    Fit
-  </div>
-  <div class="menu-item" onclick="autoLayout()" title="จัด Node และ Connection อัตโนมัติ (Ctrl+L)">
-    <svg viewBox="0 0 16 16" fill="none">
-      <rect x="5" y="1" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/>
-      <rect x="1" y="11" width="5" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/>
-      <rect x="10" y="11" width="5" height="4" rx="1" stroke="currentColor" stroke-width="1.2"/>
-      <path d="M8 5v2.5M8 7.5H3.5V11M8 7.5H12.5V11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    Auto Layout
-  </div>
-  <div class="menu-item" id="zoom-in-btn" onclick="zoom(1.15)">
-    <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 7h4M7 5v4M10.5 10.5l3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-    Zoom In
-  </div>
-  <div class="menu-item" onclick="zoom(1/1.15)">
-    <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M5 7h4M10.5 10.5l3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-    Zoom Out
-  </div>
-  <div class="menu-sep"></div>
-  <div class="menu-item" onclick="deleteSelected()">
-    <svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M6 4V3h4v1M5 4l.5 9h5l.5-9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    Delete
-  </div>
-  <button id="run-main" onclick="runFlowchart()">
-    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 2.5l10 5.5-10 5.5V2.5z"/></svg>
-    Run
-  </button>
-  <button id="step-main" onclick="startStepRun()">
-    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3 2.5l7 5.5-7 5.5V2.5z"/><rect x="11" y="2.5" width="2.5" height="11" rx="1"/></svg>
-    Step
-  </button>
-  <div style="width:8px"></div>
-  <div class="menu-item" onclick="openChatWin()" title="เปิด Chat Console">
-    <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="3" width="12" height="10" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M5 6l2 2-2 2M8 10h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    Console
-  </div>
-  <div class="menu-item" onclick="openTurtleWin()" title="เปิด Turtle Graphics">
-    <svg viewBox="0 0 16 16" fill="none"><ellipse cx="8" cy="9" rx="5" ry="4" stroke="currentColor" stroke-width="1.2"/><path d="M8 5V3M5 6L3 4M11 6l2-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="8" cy="9" r="1.5" fill="currentColor" opacity=".5"/></svg>
-    Turtle
-  </div>
-  <div class="menu-item" onclick="openPyWin()" title="Python Code Generator">
-    <svg viewBox="0 0 16 16" fill="none"><path d="M5 2h3a2 2 0 012 2v1H4V4a2 2 0 011-2z" stroke="currentColor" stroke-width="1.2"/><path d="M11 9H8a2 2 0 00-2 2v1h6v-1a2 2 0 00-1-2z" stroke="currentColor" stroke-width="1.2"/><circle cx="7" cy="4.5" r=".8" fill="currentColor"/><circle cx="9" cy="11.5" r=".8" fill="currentColor"/></svg>
-    Python
-  </div>
-  <div class="menu-sep"></div>
-  <div class="menu-item" id="tutorial-btn" onclick="openTutorialWin()" title="Tutorial">
-    <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M8 7v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="5" r=".8" fill="currentColor"/></svg>
-    Tutorial
-  </div>
-  <!-- <div class="menu-item" id="theme-toggle-btn" onclick="toggleThemePicker()" title="Change Theme">
-    <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="4" stroke="currentColor" stroke-width="1.2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-    Theme
-  </div> -->
+
 </div>
 
 <!-- LAYOUT -->
@@ -95,6 +123,7 @@
 
   <!-- TOOLBAR -->
   <div id="toolbar">
+    <div id="toolbar-inner">
     <div class="tb-section">
       <div class="tb-label">Tools</div>
       <div class="tb-btn active" data-mode="select" onclick="setMode('select')">
@@ -304,6 +333,7 @@
         คลิกเส้น = ลบการเชื่อมต่อ
       </div>
     </div>
+    </div><!-- end toolbar-inner -->
   </div>
 
   <!-- CANVAS -->
@@ -403,39 +433,7 @@
   </div>
 </div>
 
-<!-- SAVE FILE DIALOG -->
-<div id="save-overlay">
-  <div id="save-box">
-    <div id="save-header">
-      <div id="save-icon">
-        <svg viewBox="0 0 20 20" fill="none" width="20" height="20">
-          <path d="M4 3h9l3 3v11H4V3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-          <rect x="7" y="12" width="6" height="5" rx=".5" stroke="currentColor" stroke-width="1.3"/>
-          <rect x="7" y="3" width="5" height="4" rx=".5" stroke="currentColor" stroke-width="1.3"/>
-        </svg>
-      </div>
-      <div id="save-title">Save Flowchart</div>
-      <button id="save-close-btn" onclick="closeSaveDialog()" title="ปิด">
-        <svg viewBox="0 0 14 14" fill="none" width="12" height="12"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-      </button>
-    </div>
-    <div id="save-body">
-      <label class="save-label" for="save-filename-input">File name</label>
-      <div id="save-input-wrap">
-        <input id="save-filename-input" type="text" class="save-input" placeholder="my-flowchart" autocomplete="off" spellcheck="false"/>
-        <span id="save-ext">.flow</span>
-      </div>
-      <div id="save-hint">The file will be saved to your Downloads folder.</div>
-    </div>
-    <div id="save-footer">
-      <button class="dlg-btn secondary" onclick="closeSaveDialog()">Cancel</button>
-      <button class="dlg-btn primary" id="save-confirm-btn" onclick="confirmSaveFile()">
-        <svg viewBox="0 0 14 14" fill="none" width="12" height="12" style="vertical-align:-1px;margin-right:4px"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Save
-      </button>
-    </div>
-  </div>
-</div>
+
 
 <!-- CHAT FLOATING WINDOW -->
 <div class="fw" id="chat-win">

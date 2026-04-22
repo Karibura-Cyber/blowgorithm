@@ -177,6 +177,7 @@ document.addEventListener('keydown', e => {
     if (e.key === 'c') { e.preventDefault(); copySelected(); return; }
     if (e.key === 'v') { e.preventDefault(); pasteSelected(); return; }
     if (e.key === 'l') { e.preventDefault(); autoLayout(); return; }
+    if (e.key === 's') { e.preventDefault(); saveFile(); return; }
   }
 });
 
