@@ -749,34 +749,44 @@ function toggleOutputPanel() {
 }
 
 // ═══════════════════════════════════════════════
-//  AUTO-PAIR QUOTES IN PROPS PANEL
+//  AUTO-PAIR BRACKETS & QUOTES IN PROPS PANEL
 // ═══════════════════════════════════════════════
-document.addEventListener('keydown', e => {
-  if (e.key !== '"') return;
-  const el = e.target;
-  if (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA') return;
-  if (!el.closest('#props-body')) return;
+(function () {
+  const PAIRS = { '"': '"', "'": "'", '(': ')', '{': '}', '[': ']' };
 
-  e.preventDefault();
-  const start = el.selectionStart;
-  const end   = el.selectionEnd;
-  const val   = el.value;
+  document.addEventListener('keydown', e => {
+    const open = e.key;
+    if (!PAIRS[open]) return;
+    const el = e.target;
+    if (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA') return;
+    if (!el.closest('#props-body')) return;
 
-  if (start !== end) {
-    // Wrap selection in quotes
-    const selected = val.slice(start, end);
-    el.value = val.slice(0, start) + '"' + selected + '"' + val.slice(end);
-    el.selectionStart = start + 1;
-    el.selectionEnd   = end   + 1;
-  } else if (val[start] === '"') {
-    // Step over existing closing quote
-    el.selectionStart = el.selectionEnd = start + 1;
-  } else {
-    // Insert pair and place cursor between them
-    el.value = val.slice(0, start) + '""' + val.slice(end);
-    el.selectionStart = el.selectionEnd = start + 1;
-  }
+    const close = PAIRS[open];
+    const start = el.selectionStart;
+    const end   = el.selectionEnd;
+    const val   = el.value;
 
-  // Fire input event so the live node-update handlers pick up the change
-  el.dispatchEvent(new Event('input', { bubbles: true }));
-}, true);
+    // Step over existing closer instead of doubling up
+    if (start === end && val[start] === close) {
+      e.preventDefault();
+      el.selectionStart = el.selectionEnd = start + 1;
+      return;
+    }
+
+    e.preventDefault();
+
+    if (start !== end) {
+      // Wrap selection
+      const selected = val.slice(start, end);
+      el.value = val.slice(0, start) + open + selected + close + val.slice(end);
+      el.selectionStart = start + 1;
+      el.selectionEnd   = end   + 1;
+    } else {
+      // Insert pair, cursor between
+      el.value = val.slice(0, start) + open + close + val.slice(end);
+      el.selectionStart = el.selectionEnd = start + 1;
+    }
+
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  }, true);
+})();
