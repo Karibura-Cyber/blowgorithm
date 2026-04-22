@@ -129,10 +129,24 @@ function renderProps(n) {
     </div>`;
   }
   if (n.type === 'decision') {
+    const sides = ['bottom', 'top', 'left', 'right'];
+    const sideOpts = (cur) => sides.map(s => `<option value="${s}"${cur === s ? ' selected' : ''}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>`).join('');
+    const trueDir  = n.vars.trueDir  || 'bottom';
+    const falseDir = n.vars.falseDir || 'right';
     html += `<div class="prop-group">
       <div class="prop-label">เงื่อนไข (JavaScript)</div>
       <input class="prop-input" id="pp-cond" value="${esc(n.vars.cond || '')}" placeholder="เช่น x > 0">
-      <div class="prop-hint">ออก True = ล่าง · ออก False = ซ้าย/ขวา</div>
+      <div class="prop-hint">กำหนดทิศออก True / False ด้านล่าง</div>
+    </div>
+    <div class="prop-group" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:end">
+      <div>
+        <div class="prop-label" style="color:#16a34a">✔ True ออกทาง</div>
+        <select class="prop-select" id="pp-true-dir">${sideOpts(trueDir)}</select>
+      </div>
+      <div>
+        <div class="prop-label" style="color:#dc2626">✘ False ออกทาง</div>
+        <select class="prop-select" id="pp-false-dir">${sideOpts(falseDir)}</select>
+      </div>
     </div>`;
   }
   if (n.type === 'call') {
@@ -246,6 +260,29 @@ function renderProps(n) {
     n.label = e.target.value ? `${e.target.value} ?` : 'Decision';
     const lbEl = document.getElementById('pp-label'); if (lbEl) lbEl.value = n.label;
     redrawNode(n);
+  };
+  const ptd = document.getElementById('pp-true-dir');
+  if (ptd) ptd.onchange = e => {
+    // Swap if same as falseDir
+    if (e.target.value === n.vars.falseDir) {
+      n.vars.falseDir = n.vars.trueDir || 'bottom';
+      const fd = document.getElementById('pp-false-dir'); if (fd) fd.value = n.vars.falseDir;
+    }
+    n.vars.trueDir = e.target.value;
+    redrawNode(n);
+    // Update connections that were on the old trueDir side
+    renderConns();
+  };
+  const pfd = document.getElementById('pp-false-dir');
+  if (pfd) pfd.onchange = e => {
+    // Swap if same as trueDir
+    if (e.target.value === n.vars.trueDir) {
+      n.vars.trueDir = n.vars.falseDir || 'bottom';
+      const td = document.getElementById('pp-true-dir'); if (td) td.value = n.vars.trueDir;
+    }
+    n.vars.falseDir = e.target.value;
+    redrawNode(n);
+    renderConns();
   };
   const cl = document.getElementById('pp-call');
   if (cl) cl.oninput = e => {
@@ -710,3 +747,36 @@ function toggleOutputPanel() {
   document.getElementById('right').classList.toggle('collapsed', _outputCollapsed);
   document.getElementById('output-toggle').classList.toggle('active', _outputCollapsed);
 }
+
+// ═══════════════════════════════════════════════
+//  AUTO-PAIR QUOTES IN PROPS PANEL
+// ═══════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key !== '"') return;
+  const el = e.target;
+  if (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA') return;
+  if (!el.closest('#props-body')) return;
+
+  e.preventDefault();
+  const start = el.selectionStart;
+  const end   = el.selectionEnd;
+  const val   = el.value;
+
+  if (start !== end) {
+    // Wrap selection in quotes
+    const selected = val.slice(start, end);
+    el.value = val.slice(0, start) + '"' + selected + '"' + val.slice(end);
+    el.selectionStart = start + 1;
+    el.selectionEnd   = end   + 1;
+  } else if (val[start] === '"') {
+    // Step over existing closing quote
+    el.selectionStart = el.selectionEnd = start + 1;
+  } else {
+    // Insert pair and place cursor between them
+    el.value = val.slice(0, start) + '""' + val.slice(end);
+    el.selectionStart = el.selectionEnd = start + 1;
+  }
+
+  // Fire input event so the live node-update handlers pick up the change
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+}, true);

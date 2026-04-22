@@ -115,7 +115,9 @@ async function runFlowchart() {
       try { result = !!evalExpr(cond, vars); }
       catch (e) { conLine(`Decision error: ${e.message}`, 'con-err'); break; }
       const outs = conns.filter(c => c.from === cur.id);
-      const chosen = result ? outs.find(c => c.fromSide === 'bottom') : outs.find(c => c.fromSide !== 'bottom');
+      const trueDir  = cur.vars.trueDir  || 'bottom';
+      const falseDir = cur.vars.falseDir || 'right';
+      const chosen = result ? outs.find(c => c.fromSide === trueDir) : outs.find(c => c.fromSide === falseDir);
       if (chosen) runHighlight = chosen.id;
       renderConns();
       cur = nodes.find(n => n.id === (chosen && chosen.to)) || null;
@@ -442,7 +444,9 @@ async function _executeOneStep() {
     try { result = !!evalExpr(cond, s.vars); }
     catch (e) { conLine(`Decision error: ${e.message}`, 'con-err'); _finishStep(); return; }
     const outs = conns.filter(c => c.from === cur.id);
-    const chosen = result ? outs.find(c => c.fromSide === 'bottom') : outs.find(c => c.fromSide !== 'bottom');
+    const trueDir  = cur.vars.trueDir  || 'bottom';
+    const falseDir = cur.vars.falseDir || 'right';
+    const chosen = result ? outs.find(c => c.fromSide === trueDir) : outs.find(c => c.fromSide === falseDir);
     if (chosen) runHighlight = chosen.id; renderConns();
     s.cur = nodes.find(n => n.id === (chosen && chosen.to)) || null;
     jumped = true;

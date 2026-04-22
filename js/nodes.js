@@ -17,6 +17,11 @@ function addNode(type, x, y) {
     vars: { ...(def.defaultVars || {}) },
     _g: null
   };
+  // Decision node: set default true/false exit sides
+  if (type === 'decision') {
+    if (!n.vars.trueDir)  n.vars.trueDir  = 'bottom';
+    if (!n.vars.falseDir) n.vars.falseDir = 'right';
+  }
   nodes.push(n);
   renderNode(n);
   selectNode(n.id);
@@ -259,20 +264,39 @@ function renderNode(n) {
 
   // True/False labels for decision
   if (n.type === 'decision') {
+    const trueDir  = n.vars.trueDir  || 'bottom';
+    const falseDir = n.vars.falseDir || 'right';
+
+    function decisionLabelPos(side, isTrue) {
+      const cx = n.x + n.w / 2, cy = n.y + n.h / 2;
+      const off = 13;
+      const positions = {
+        bottom: { x: cx,          y: n.y + n.h + off, anchor: 'middle' },
+        top:    { x: cx,          y: n.y - off + 4,   anchor: 'middle' },
+        right:  { x: n.x + n.w + 6, y: cy,            anchor: 'start'  },
+        left:   { x: n.x - 6,    y: cy,               anchor: 'end'    },
+      };
+      return positions[side] || positions['bottom'];
+    }
+
+    const tPos = decisionLabelPos(trueDir);
     const tl = ns('text');
-    tl.setAttribute('x', n.x + n.w / 2 + 6); tl.setAttribute('y', n.y + n.h + 13);
-    tl.setAttribute('text-anchor', 'middle');
+    tl.setAttribute('x', tPos.x); tl.setAttribute('y', tPos.y);
+    tl.setAttribute('text-anchor', tPos.anchor);
     tl.setAttribute('font-size', '10'); tl.setAttribute('fill', '#16a34a');
     tl.setAttribute('font-family', "'Noto Sans Thai',sans-serif");
     tl.setAttribute('pointer-events', 'none');
     tl.textContent = 'True';
+
+    const fPos = decisionLabelPos(falseDir);
     const fl = ns('text');
-    fl.setAttribute('x', n.x + n.w + 8); fl.setAttribute('y', n.y + n.h / 2);
-    fl.setAttribute('text-anchor', 'start');
+    fl.setAttribute('x', fPos.x); fl.setAttribute('y', fPos.y);
+    fl.setAttribute('text-anchor', fPos.anchor);
     fl.setAttribute('font-size', '10'); fl.setAttribute('fill', '#dc2626');
     fl.setAttribute('font-family', "'Noto Sans Thai',sans-serif");
     fl.setAttribute('pointer-events', 'none');
     fl.textContent = 'False';
+
     g.appendChild(tl); g.appendChild(fl);
   }
 

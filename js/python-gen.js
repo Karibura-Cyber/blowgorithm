@@ -122,8 +122,10 @@ function genBlock(node, depth, lines, visited, stopAtId = null) {
     } else if (t === 'decision') {
       const cond = pyExpr(cur.vars.cond || 'False');
       const outs = conns.filter(c => c.from === cur.id);
-      const trueConn  = outs.find(c => c.fromSide === 'bottom');
-      const falseConn = outs.find(c => c.fromSide !== 'bottom');
+      const trueDir  = cur.vars.trueDir  || 'bottom';
+      const falseDir = cur.vars.falseDir || 'right';
+      const trueConn  = outs.find(c => c.fromSide === trueDir);
+      const falseConn = outs.find(c => c.fromSide === falseDir);
       const trueNode  = trueConn  ? nodes.find(n => n.id === trueConn.to)  : null;
       const falseNode = falseConn ? nodes.find(n => n.id === falseConn.to) : null;
       const merge = findMerge(trueNode, falseNode, visited);
