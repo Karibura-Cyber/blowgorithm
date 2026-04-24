@@ -186,21 +186,21 @@ function renderProps(n) {
     <div class="prop-group">
       <div class="prop-label">ขั้นตอน (Step)</div>
       <input class="prop-input" id="pp-for-step" value="${esc(n.vars.step || '1')}" placeholder="เช่น 1, -1">
-      <div class="prop-hint">Body ออก Bottom · Exit ออก Right</div>
+      <div class="prop-hint">▼ Body ออก Bottom · ▶ Exit ออก Right</div>
     </div>`;
   }
   if (n.type === 'while_loop') {
     html += `<div class="prop-group">
       <div class="prop-label">เงื่อนไข (Condition)</div>
       <input class="prop-input" id="pp-while-cond" value="${esc(n.vars.cond || '')}" placeholder="เช่น x > 0">
-      <div class="prop-hint">Body ออก Bottom · Exit ออก Right</div>
+      <div class="prop-hint">▼ Body ออก Bottom · ▶ Exit ออก Right</div>
     </div>`;
   }
   if (n.type === 'do_while') {
     html += `<div class="prop-group">
       <div class="prop-label">เงื่อนไข (Condition)</div>
       <input class="prop-input" id="pp-dw-cond" value="${esc(n.vars.cond || '')}" placeholder="เช่น x > 0">
-      <div class="prop-hint">ทำ Body ก่อน แล้วตรวจ · Exit ออก Right</div>
+      <div class="prop-hint">ทำ Body ก่อน แล้วตรวจเงื่อนไข · ↑ Loop กลับ Top · ▶ Exit ออก Right</div>
     </div>`;
   }
   if (['turtle_forward', 'turtle_left', 'turtle_right'].includes(n.type)) {
@@ -547,7 +547,11 @@ function openFile() {
         if (!data.nodes || !data.conns) throw new Error('ไฟล์ไม่ถูกต้อง');
         historySnapshot();
         nodes = data.nodes.map(n => ({ ...n, _g: null }));
-        conns = data.conns;
+        conns = data.conns.map(c => {
+          // Migrate old single-midPt format to pts array
+          const pts = c.pts ? c.pts : (c.midPt ? [c.midPt] : []);
+          return { ...c, pts, midPt: undefined };
+        });
         nextId = data.nextId || Math.max(0, ...nodes.map(n => n.id)) + 1;
         selId = null;
         currentFileName = file.name.replace(/\.flow$/, '');
@@ -672,62 +676,42 @@ function copyChat() {
   const input = document.getElementById('filename-input');
   if (!input) return;
 
-  // Sync currentFileName → input on load
   input.value = currentFileName || 'flowchart';
 
-  // Auto-size the input to its content
   function resizeInput() {
     const tmp = document.createElement('span');
-    tmp.style.cssText = 'position:fixed;visibility:hidden;font:500 13px/1 var(--font);white-space:pre;';
+    tmp.style.cssText = 'position:fixed;visibility:hidden;font:600 13.5px/1 var(--font);letter-spacing:-.01em;white-space:pre;';
     tmp.textContent = input.value || ' ';
     document.body.appendChild(tmp);
-    const w = Math.max(60, Math.min(200, tmp.offsetWidth + 8));
+    const w = Math.max(30, Math.min(200, tmp.offsetWidth + 4));
     input.style.width = w + 'px';
     document.body.removeChild(tmp);
   }
   resizeInput();
 
-  input.addEventListener('input', () => {
-    resizeInput();
-  });
+  input.addEventListener('input', resizeInput);
 
   input.addEventListener('blur', () => {
-    const raw = input.value.trim().replace(/[\\/:*?"<>|]/g, '_') || 'flowchart';
+    const raw = input.value.trim().replace(/[\/:\*?"<>|]/g, '_') || 'flowchart';
     input.value = raw;
     currentFileName = raw;
     document.title = 'Blowgorithm — ' + raw;
     resizeInput();
-    const hf = document.getElementById('header-filename');
-    if (hf) hf.textContent = raw;
     statusMsg.textContent = 'ชื่อไฟล์: ' + raw + '.flow';
   });
 
   input.addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    if (e.key === 'Enter')  { e.preventDefault(); input.blur(); }
     if (e.key === 'Escape') { input.value = currentFileName; input.blur(); }
   });
-
-  // Click on the wrap focuses the input
-  const wrap = document.getElementById('filename-wrap');
-  wrap.addEventListener('click', e => {
-    if (e.target !== input) { input.focus(); input.select(); }
-  });
-
-  // Keep input in sync when currentFileName changes externally (openFile, etc.)
-  const _origOpenFile = window.openFile;
-  // (patched in openFile function below via syncFilenameInput)
 })();
 
-/** Call this whenever currentFileName is changed externally. */
+/** Call this whenever currentFileName is changed externally (openFile, saveFile, etc.) */
 function syncFilenameInput() {
   const input = document.getElementById('filename-input');
-  if (input) {
-    input.value = currentFileName || 'flowchart';
-    const evt = new Event('input');
-    input.dispatchEvent(evt);
-  }
-  const hf = document.getElementById('header-filename');
-  if (hf) hf.textContent = currentFileName || 'flowchart';
+  if (!input) return;
+  input.value = currentFileName || 'flowchart';
+  input.dispatchEvent(new Event('input'));
 }
 
 // ═══════════════════════════════════════════════

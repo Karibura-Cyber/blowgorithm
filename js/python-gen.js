@@ -120,25 +120,9 @@ function genBlock(node, depth, lines, visited, stopAtId = null) {
       const fn = cur.vars.callName || cur.label || 'sub_process';
       lines.push(ind(depth) + `${pyIdent(fn)}()`);
     } else if (t === 'decision') {
-      const cond = pyExpr(cur.vars.cond || 'False');
-      const outs = conns.filter(c => c.from === cur.id);
-      const trueDir  = cur.vars.trueDir  || 'bottom';
-      const falseDir = cur.vars.falseDir || 'right';
-      const trueConn  = outs.find(c => c.fromSide === trueDir);
-      const falseConn = outs.find(c => c.fromSide === falseDir);
-      const trueNode  = trueConn  ? nodes.find(n => n.id === trueConn.to)  : null;
-      const falseNode = falseConn ? nodes.find(n => n.id === falseConn.to) : null;
-      const merge = findMerge(trueNode, falseNode, visited);
-      lines.push(ind(depth) + `if ${cond}:`);
-      if (trueNode) {
-        const subV = new Set(visited);
-        genBlock(trueNode, depth + 1, lines, subV, merge?.id);
-      } else { lines.push(ind(depth + 1) + 'pass'); }
-      if (falseNode) {
-        lines.push(ind(depth) + 'else:');
-        const subV = new Set(visited);
-        genBlock(falseNode, depth + 1, lines, subV, merge?.id);
-      }
+      // Collect the full if / elif / else chain before emitting
+      const merge = _findDecisionMerge(cur, visited);
+      _genIfChain(cur, depth, lines, visited, merge);
       cur = merge || null; continue;
     } else if (t === 'for_loop') {
       const vn = pyIdent(cur.vars.varName || 'i');
@@ -211,6 +195,100 @@ function genBlock(node, depth, lines, visited, stopAtId = null) {
   }
   return null;
 }
+
+// ── If / elif / else chain generator ──────────────
+// Walk a chain of decision nodes connected false→decision
+// and emit proper if / elif / else blocks.
+
+function _getDecisionBranches(decNode) {
+  const outs     = conns.filter(c => c.from === decNode.id);
+  const trueDir  = decNode.vars.trueDir  || 'bottom';
+  const falseDir = decNode.vars.falseDir || 'right';
+  const trueConn  = outs.find(c => c.fromSide === trueDir);
+  const falseConn = outs.find(c => c.fromSide === falseDir);
+  return {
+    trueNode:  trueConn  ? nodes.find(n => n.id === trueConn.to)  : null,
+    falseNode: falseConn ? nodes.find(n => n.id === falseConn.to) : null,
+  };
+}
+
+// Find the single merge point for the entire if/elif/else chain
+// starting at decNode.
+function _findDecisionMerge(decNode, visited) {
+  // Collect all branch-entry nodes across the whole chain
+  const branchHeads = [];
+  let d = decNode;
+  while (d && d.type === 'decision') {
+    const { trueNode, falseNode } = _getDecisionBranches(d);
+    if (trueNode)  branchHeads.push(trueNode);
+    // If the false branch IS another decision, keep walking; otherwise it's the final else-body
+    if (falseNode && falseNode.type !== 'decision') {
+      branchHeads.push(falseNode);
+      break;
+    }
+    d = falseNode;
+  }
+  if (branchHeads.length < 2) return null;
+
+  // BFS successors of branchHeads[0]
+  const aSucc = new Set();
+  const qa = [branchHeads[0]]; let safeA = 0;
+  while (qa.length && safeA++ < 400) {
+    const n = qa.shift();
+    if (!n || aSucc.has(n.id)) continue;
+    aSucc.add(n.id);
+    conns.filter(c => c.from === n.id).forEach(c => {
+      const nx = nodes.find(x => x.id === c.to);
+      if (nx && !aSucc.has(nx.id)) qa.push(nx);
+    });
+  }
+  // Walk BFS from every other head; first node in aSucc wins
+  for (let i = 1; i < branchHeads.length; i++) {
+    const qb = [branchHeads[i]]; const bSeen = new Set(); let safeB = 0;
+    while (qb.length && safeB++ < 400) {
+      const n = qb.shift();
+      if (!n || bSeen.has(n.id)) continue;
+      bSeen.add(n.id);
+      if (aSucc.has(n.id)) return n;
+      conns.filter(c => c.from === n.id).forEach(c => {
+        const nx = nodes.find(x => x.id === c.to);
+        if (nx) qb.push(nx);
+      });
+    }
+  }
+  return null;
+}
+
+// Emit if/elif/else for a chain of decision nodes.
+// keyword: 'if' for the first call, 'elif' for recursion.
+function _genIfChain(decNode, depth, lines, visited, merge, keyword = 'if') {
+  visited.add(decNode.id);
+  const cond = pyExpr(decNode.vars.cond || 'False');
+  const { trueNode, falseNode } = _getDecisionBranches(decNode);
+
+  lines.push(ind(depth) + `${keyword} ${cond}:`);
+
+  // True branch
+  if (trueNode) {
+    const subV = new Set(visited);
+    genBlock(trueNode, depth + 1, lines, subV, merge ? merge.id : null);
+  } else {
+    lines.push(ind(depth + 1) + 'pass');
+  }
+
+  // False branch — chain as elif if it's another bare decision
+  if (falseNode) {
+    if (falseNode.type === 'decision' && !visited.has(falseNode.id)) {
+      // Recurse as elif — do NOT add an else: wrapper
+      _genIfChain(falseNode, depth, lines, visited, merge, 'elif');
+    } else {
+      lines.push(ind(depth) + 'else:');
+      const subV = new Set(visited);
+      genBlock(falseNode, depth + 1, lines, subV, merge ? merge.id : null);
+    }
+  }
+}
+
 
 function findMerge(nodeA, nodeB, visited) {
   if (!nodeA || !nodeB) return null;

@@ -86,7 +86,7 @@ function fitNodeToLabel(n) {
   else if (n.type === 'start')        { padX = 48; padY = 16; }
   else if (n.type === 'io' || n.type === 'output_only') { padX = 52; padY = 16; }
   else if (n.type === 'for_loop' || n.type === 'while_loop') { padX = 52; padY = 18; }
-  else if (n.type === 'do_while')     { padX = 32; padY = 18; }
+  else if (n.type === 'do_while')     { padX = 44; padY = 26; }
   else if (n.type === 'call')         { padX = 44; padY = 16; }
   else if (n.type.startsWith('turtle_')) { padX = 44; padY = 14; }
   else                                { padX = 32; padY = 16; }
@@ -115,10 +115,18 @@ function makeShape(n) {
     el = ns('polygon');
     el.setAttribute('points', polyIOPts(n));
   } else if (n.type === 'for_loop' || n.type === 'while_loop') {
+    // Hexagon — pre-test loop
     el = ns('polygon');
-    const sk = 14;
+    const sk = 16;
     el.setAttribute('points',
       `${n.x + sk},${n.y} ${n.x + n.w - sk},${n.y} ${n.x + n.w},${n.y + n.h / 2} ${n.x + n.w - sk},${n.y + n.h} ${n.x + sk},${n.y + n.h} ${n.x},${n.y + n.h / 2}`
+    );
+  } else if (n.type === 'do_while') {
+    // Pentagon pointing down — post-test loop
+    el = ns('polygon');
+    const cx = n.x + n.w / 2;
+    el.setAttribute('points',
+      `${n.x},${n.y} ${n.x + n.w},${n.y} ${n.x + n.w},${n.y + n.h * 0.72} ${cx},${n.y + n.h} ${n.x},${n.y + n.h * 0.72}`
     );
   } else if (n.type.startsWith('turtle_')) {
     el = ns('rect');
@@ -300,23 +308,40 @@ function renderNode(n) {
     g.appendChild(tl); g.appendChild(fl);
   }
 
-  // Body/Exit labels for loop nodes
-  if (n.type === 'for_loop' || n.type === 'while_loop' || n.type === 'do_while') {
-    const bl = ns('text');
-    bl.setAttribute('x', n.x + n.w / 2); bl.setAttribute('y', n.y + n.h + 13);
-    bl.setAttribute('text-anchor', 'middle');
-    bl.setAttribute('font-size', '10'); bl.setAttribute('fill', '#16a34a');
-    bl.setAttribute('font-family', "'Noto Sans Thai',sans-serif");
-    bl.setAttribute('pointer-events', 'none');
-    bl.textContent = 'Body';
-    const el2 = ns('text');
-    el2.setAttribute('x', n.x + n.w + 8); el2.setAttribute('y', n.y + n.h / 2);
-    el2.setAttribute('text-anchor', 'start');
-    el2.setAttribute('font-size', '10'); el2.setAttribute('fill', '#dc2626');
-    el2.setAttribute('font-family', "'Noto Sans Thai',sans-serif");
-    el2.setAttribute('pointer-events', 'none');
-    el2.textContent = 'Exit';
-    g.appendChild(bl); g.appendChild(el2);
+  // Body/Exit/Loop labels per loop type
+  if (n.type === 'for_loop' || n.type === 'while_loop') {
+    const bodyLbl = ns('text');
+    bodyLbl.setAttribute('x', n.x + n.w / 2); bodyLbl.setAttribute('y', n.y + n.h + 13);
+    bodyLbl.setAttribute('text-anchor', 'middle');
+    bodyLbl.setAttribute('font-size', '9.5'); bodyLbl.setAttribute('fill', '#16a34a');
+    bodyLbl.setAttribute('font-family', "'Noto Sans Thai',sans-serif");
+    bodyLbl.setAttribute('pointer-events', 'none');
+    bodyLbl.textContent = '\u25bc Body';
+    const exitLbl = ns('text');
+    exitLbl.setAttribute('x', n.x + n.w + 8); exitLbl.setAttribute('y', n.y + n.h / 2);
+    exitLbl.setAttribute('text-anchor', 'start'); exitLbl.setAttribute('dominant-baseline', 'central');
+    exitLbl.setAttribute('font-size', '9.5'); exitLbl.setAttribute('fill', '#dc2626');
+    exitLbl.setAttribute('font-family', "'Noto Sans Thai',sans-serif");
+    exitLbl.setAttribute('pointer-events', 'none');
+    exitLbl.textContent = '\u25ba Exit';
+    g.appendChild(bodyLbl); g.appendChild(exitLbl);
+  }
+  if (n.type === 'do_while') {
+    const bodyLbl = ns('text');
+    bodyLbl.setAttribute('x', n.x + n.w / 2); bodyLbl.setAttribute('y', n.y - 7);
+    bodyLbl.setAttribute('text-anchor', 'middle');
+    bodyLbl.setAttribute('font-size', '9.5'); bodyLbl.setAttribute('fill', '#16a34a');
+    bodyLbl.setAttribute('font-family', "'Noto Sans Thai',sans-serif");
+    bodyLbl.setAttribute('pointer-events', 'none');
+    bodyLbl.textContent = '\u2191 Loop back';
+    const exitLbl = ns('text');
+    exitLbl.setAttribute('x', n.x + n.w + 8); exitLbl.setAttribute('y', n.y + n.h * 0.36);
+    exitLbl.setAttribute('text-anchor', 'start'); exitLbl.setAttribute('dominant-baseline', 'central');
+    exitLbl.setAttribute('font-size', '9.5'); exitLbl.setAttribute('fill', '#dc2626');
+    exitLbl.setAttribute('font-family', "'Noto Sans Thai',sans-serif");
+    exitLbl.setAttribute('pointer-events', 'none');
+    exitLbl.textContent = '\u25ba Exit';
+    g.appendChild(bodyLbl); g.appendChild(exitLbl);
   }
 
   // Connection dots

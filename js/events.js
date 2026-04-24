@@ -113,7 +113,12 @@ wrap.addEventListener('mouseup', e => {
       const tn = nodes.find(n => n.id === +gEl.dataset.id);
       if (tn && tn.id !== connStart.node.id) endConn(tn);
       else cancelConn();
-    } else cancelConn();
+    } else {
+      // Dropped on empty canvas — show quick-add picker
+      const c = toSVG(e.clientX, e.clientY);
+      _pendingDropPos = { cx: e.clientX, cy: e.clientY, svgX: c.x, svgY: c.y };
+      cancelConn(true);
+    }
   }
 });
 
