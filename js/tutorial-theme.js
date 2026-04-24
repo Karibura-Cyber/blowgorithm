@@ -361,6 +361,7 @@ function setTheme(name) {
 
 function toggleThemePicker() {
   const picker = document.getElementById('theme-picker');
+  if (!picker) return;
   picker.classList.toggle('open');
 }
 
@@ -368,7 +369,8 @@ function toggleThemePicker() {
 document.addEventListener('mousedown', e => {
   const picker = document.getElementById('theme-picker');
   const btn = document.getElementById('theme-toggle-btn');
-  if (picker.classList.contains('open') && !picker.contains(e.target) && !btn.contains(e.target)) {
+  if (!picker) return;
+  if (picker.classList.contains('open') && !picker.contains(e.target) && btn && !btn.contains(e.target)) {
     picker.classList.remove('open');
   }
 });

@@ -510,6 +510,7 @@ document.addEventListener('mousedown', e => {
 document.addEventListener('mousedown', e => {
   const picker = document.getElementById('theme-picker');
   const btn = document.getElementById('theme-toggle-btn');
+  if (!picker) return;
   if (picker.classList.contains('open') && !picker.contains(e.target) && btn && !btn.contains(e.target)) {
     picker.classList.remove('open');
   }
