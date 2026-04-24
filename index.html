@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Blowgorithm</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600&family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -95,6 +95,14 @@
       </button>
     </div>
     <div class="hdr-sep"></div>
+    <!-- OS Style picker toggle -->
+    <button class="hdr-icon-btn" id="style-toggle-btn" onclick="toggleStylePicker()" title="OS Style">
+      <svg viewBox="0 0 16 16" fill="none" width="16" height="16">
+        <rect x="2" y="3" width="12" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M4 5h2M4 7h5M4 9h3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity=".7"/>
+        <path d="M10 6l2 1.5-2 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
     <button class="hdr-icon-btn" id="output-toggle" onclick="toggleOutputPanel()" title="Toggle Output Panel">
       <svg viewBox="0 0 16 16" fill="none" width="16" height="16">
         <rect x="2" y="2" width="12" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
@@ -400,6 +408,11 @@
       <div class="fw-dot green" onclick="closePropsWin()" title="ปิด"></div>
     </div>
     <div class="fw-title" id="props-win-title">Properties</div>
+    <div class="fw-win-controls">
+      <button class="fw-wc-btn" onclick="closePropsWin()" title="Minimize">&#x2014;</button>
+      <button class="fw-wc-btn" onclick="closePropsWin()" title="Maximize">&#x2610;</button>
+      <button class="fw-wc-btn close" onclick="closePropsWin()" title="Close">&#x2715;</button>
+    </div>
   </div>
   <div id="props-body" style="padding:14px;overflow-y:auto;flex:1;min-width:0;"></div>
 </div>
@@ -421,8 +434,6 @@
   </div>
 </div>
 
-
-
 <!-- CHAT FLOATING WINDOW -->
 <div class="fw" id="chat-win">
   <div class="fw-titlebar" id="chat-win-bar">
@@ -432,6 +443,11 @@
       <div class="fw-dot green" onclick="maximizeChatWin()" title="ขยาย"></div>
     </div>
     <div class="fw-title">Console</div>
+    <div class="fw-win-controls">
+      <button class="fw-wc-btn" onclick="minimizeChatWin()" title="Minimize">&#x2014;</button>
+      <button class="fw-wc-btn" onclick="maximizeChatWin()" title="Maximize">&#x2610;</button>
+      <button class="fw-wc-btn close" onclick="closeChatWin()" title="Close">&#x2715;</button>
+    </div>
   </div>
   <div id="chat-win-toolbar">
     <button onclick="clearChat()">Clear</button>
@@ -459,6 +475,11 @@
       <div class="fw-dot green" onclick="maximizeTurtleWin()" title="ขยาย"></div>
     </div>
     <div class="fw-title">Turtle Graphics</div>
+    <div class="fw-win-controls">
+      <button class="fw-wc-btn" onclick="minimizeTurtleWin()" title="Minimize">&#x2014;</button>
+      <button class="fw-wc-btn" onclick="maximizeTurtleWin()" title="Maximize">&#x2610;</button>
+      <button class="fw-wc-btn close" onclick="closeTurtleWin()" title="Close">&#x2715;</button>
+    </div>
   </div>
   <div id="turtle-win-toolbar">
     <button onclick="clearTurtle()">Clear</button>
@@ -476,52 +497,56 @@
 
 <div id="tb-ghost"></div>
 
-<!-- THEME PICKER -->
-<div id="theme-picker">
-  <div class="theme-picker-label">Theme</div>
+<!-- OS STYLE PICKER -->
+<div id="style-picker">
+  <div class="style-picker-label">Interface Style</div>
 
-  <div class="theme-opt active" data-theme="light" onclick="setTheme('light')">
-    <div class="theme-swatch">
-      <span style="background:#f5f5f2"></span>
-      <span style="background:#ffffff"></span>
-      <span style="background:#2563eb"></span>
-      <span style="background:#e0ddd8"></span>
+  <div class="style-opt active" data-style="ubuntu" onclick="setStyle('ubuntu')">
+    <div class="style-os-icon">
+      <div class="style-os-icon-bar">
+        <div class="style-os-icon-dot"></div>
+        <div class="style-os-icon-dot"></div>
+        <div class="style-os-icon-dot"></div>
+      </div>
+      <div class="style-os-icon-canvas"></div>
     </div>
-    <span class="theme-opt-name">Light</span>
-    <svg class="theme-opt-check" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div>
+      <div class="style-opt-name">Ubuntu</div>
+      <div class="style-opt-desc">Orange &amp; Aubergine</div>
+    </div>
+    <svg class="style-opt-check" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </div>
 
-  <div class="theme-opt" data-theme="dark" onclick="setTheme('dark')">
-    <div class="theme-swatch">
-      <span style="background:#0f1117"></span>
-      <span style="background:#1a1d27"></span>
-      <span style="background:#4f7eff"></span>
-      <span style="background:#2a2e3e"></span>
+  <div class="style-opt" data-style="windows" onclick="setStyle('windows')">
+    <div class="style-os-icon">
+      <div class="style-os-icon-bar">
+        <div class="style-os-icon-dot"></div>
+        <div class="style-os-icon-dot"></div>
+        <div class="style-os-icon-dot"></div>
+      </div>
+      <div class="style-os-icon-canvas"></div>
     </div>
-    <span class="theme-opt-name">Dark</span>
-    <svg class="theme-opt-check" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div>
+      <div class="style-opt-name">Windows</div>
+      <div class="style-opt-desc">Fluent &amp; Blue</div>
+    </div>
+    <svg class="style-opt-check" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </div>
 
-  <div class="theme-opt" data-theme="dracula" onclick="setTheme('dracula')">
-    <div class="theme-swatch">
-      <span style="background:#282a36"></span>
-      <span style="background:#1e1f29"></span>
-      <span style="background:#ff79c6"></span>
-      <span style="background:#bd93f9"></span>
+  <div class="style-opt" data-style="macos" onclick="setStyle('macos')">
+    <div class="style-os-icon">
+      <div class="style-os-icon-bar">
+        <div class="style-os-icon-dot"></div>
+        <div class="style-os-icon-dot"></div>
+        <div class="style-os-icon-dot"></div>
+      </div>
+      <div class="style-os-icon-canvas"></div>
     </div>
-    <span class="theme-opt-name">Dracula</span>
-    <svg class="theme-opt-check" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  </div>
-
-  <div class="theme-opt" data-theme="rich" onclick="setTheme('rich')">
-    <div class="theme-swatch">
-      <span style="background:#0a0c14"></span>
-      <span style="background:#0f1221"></span>
-      <span style="background:#c9a84c"></span>
-      <span style="background:#1e2340"></span>
+    <div>
+      <div class="style-opt-name">macOS</div>
+      <div class="style-opt-desc">Cupertino &amp; Clean</div>
     </div>
-    <span class="theme-opt-name">Rich</span>
-    <svg class="theme-opt-check" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg class="style-opt-check" viewBox="0 0 14 14" fill="none"><path d="M2 7l4 4 6-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </div>
 </div>
 
@@ -529,8 +554,6 @@
 <div id="tutorial-win">
   <div id="tutorial-overlay"></div>
   <div id="tutorial-modal">
-
-    <!-- Header -->
     <div id="tutorial-header">
       <div id="tutorial-logo">
         <svg viewBox="0 0 20 20" fill="none" width="20" height="20">
@@ -543,31 +566,20 @@
         <svg viewBox="0 0 14 14" fill="none" width="13" height="13"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
       </button>
     </div>
-
-    <!-- Progress bar -->
     <div id="tutorial-progress-wrap">
       <div id="tutorial-progress-bar"></div>
     </div>
-
-    <!-- Two-column body -->
     <div id="tutorial-body">
-
-      <!-- Left: illustration + step label -->
       <div id="tutorial-left">
         <div id="tutorial-illustration"></div>
         <div id="tutorial-step-label"></div>
       </div>
-
-      <!-- Right: text content -->
       <div id="tutorial-right">
         <div id="tutorial-title"></div>
         <div id="tutorial-desc"></div>
         <div id="tutorial-tips"></div>
       </div>
-
     </div>
-
-    <!-- Footer: prev | dots | next -->
     <div id="tutorial-footer">
       <button id="tutorial-btn-prev" onclick="tutorialPrev()">
         <svg viewBox="0 0 14 14" fill="none" width="11" height="11"><path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -579,7 +591,6 @@
         <svg viewBox="0 0 14 14" fill="none" width="11" height="11"><path d="M5 2l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
-
   </div>
 </div>
 
@@ -630,6 +641,11 @@
       <div class="fw-dot green"  onclick="maximizePyWin()" title="ขยาย"></div>
     </div>
     <div class="fw-title">Python Code Generator</div>
+    <div class="fw-win-controls">
+      <button class="fw-wc-btn" onclick="minimizePyWin()" title="Minimize">&#x2014;</button>
+      <button class="fw-wc-btn" onclick="maximizePyWin()" title="Maximize">&#x2610;</button>
+      <button class="fw-wc-btn close" onclick="closePyWin()" title="Close">&#x2715;</button>
+    </div>
   </div>
   <div id="py-win-toolbar">
     <button onclick="generatePython()" id="py-gen-btn">
@@ -670,6 +686,7 @@
 <script src="js/interpreter.js"></script>
 <script src="js/python-gen.js"></script>
 <script src="js/auto-layout.js"></script>
+<script src="js/style-switcher.js"></script>
 <script src="js/tutorial-theme.js"></script>
 <script src="js/main.js"></script>
 </body>
