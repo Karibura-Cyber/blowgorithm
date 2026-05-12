@@ -238,7 +238,8 @@ function renderConns() {
 const _QA_GROUPS = [
   { label: 'Flow',    types: ['start', 'process', 'decision', 'io', 'output_only', 'declare', 'call'] },
   { label: 'Loops',   types: ['for_loop', 'while_loop', 'do_while'] },
-  { label: 'Turtle',  types: ['turtle_forward','turtle_left','turtle_right','turtle_penup','turtle_pendown',
+  { label: 'Turtle',  types: ['turtle_forward','turtle_left','turtle_right','turtle_circle',
+                               'turtle_penup','turtle_pendown',
                                'turtle_pencolor','turtle_fillcolor','turtle_beginfill','turtle_endfill',
                                'turtle_home','turtle_clear'] },
 ];
@@ -251,6 +252,7 @@ const _QA_NAMES = {
   turtle_penup:'Pen Up', turtle_pendown:'Pen Down', turtle_pencolor:'Pen Color',
   turtle_fillcolor:'Fill Color', turtle_beginfill:'Begin Fill',
   turtle_endfill:'End Fill', turtle_home:'Home', turtle_clear:'Clear',
+  turtle_circle:'Circle',
 };
 
 let _qaFocusIdx = -1;
