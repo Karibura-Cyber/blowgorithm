@@ -134,9 +134,9 @@ function renderProps(n) {
     const trueDir  = n.vars.trueDir  || 'bottom';
     const falseDir = n.vars.falseDir || 'right';
     html += `<div class="prop-group">
-      <div class="prop-label">เงื่อนไข (JavaScript)</div>
-      <input class="prop-input" id="pp-cond" value="${esc(n.vars.cond || '')}" placeholder="เช่น x > 0">
-      <div class="prop-hint">กำหนดทิศออก True / False ด้านล่าง</div>
+      <div class="prop-label">เงื่อนไข (Python)</div>
+      <input class="prop-input" id="pp-cond" value="${esc(n.vars.cond || '')}" placeholder="เช่น x > 0 and y != 0">
+      <div class="prop-hint">ใช้ and · or · not · != · == ได้เลย · กำหนดทิศออก True / False ด้านล่าง</div>
     </div>
     <div class="prop-group" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:end">
       <div>
@@ -192,15 +192,15 @@ function renderProps(n) {
   if (n.type === 'while_loop') {
     html += `<div class="prop-group">
       <div class="prop-label">เงื่อนไข (Condition)</div>
-      <input class="prop-input" id="pp-while-cond" value="${esc(n.vars.cond || '')}" placeholder="เช่น x > 0">
-      <div class="prop-hint">▼ Body ออก Bottom · ▶ Exit ออก Right</div>
+      <input class="prop-input" id="pp-while-cond" value="${esc(n.vars.cond || '')}" placeholder="เช่น x > 0 and x != 10">
+      <div class="prop-hint">ใช้ and · or · not · != ได้เลย · ▼ Body ออก Bottom · ▶ Exit ออก Right</div>
     </div>`;
   }
   if (n.type === 'do_while') {
     html += `<div class="prop-group">
       <div class="prop-label">เงื่อนไข (Condition)</div>
-      <input class="prop-input" id="pp-dw-cond" value="${esc(n.vars.cond || '')}" placeholder="เช่น x > 0">
-      <div class="prop-hint">ทำ Body ก่อน แล้วตรวจเงื่อนไข · ↑ Loop กลับ Top · ▶ Exit ออก Right</div>
+      <input class="prop-input" id="pp-dw-cond" value="${esc(n.vars.cond || '')}" placeholder="เช่น x > 0 and x != 10">
+      <div class="prop-hint">ใช้ and · or · not · != ได้เลย · ทำ Body ก่อน แล้วตรวจเงื่อนไข · ↑ Loop กลับ Top · ▶ Exit ออก Right</div>
     </div>`;
   }
   if (['turtle_forward', 'turtle_left', 'turtle_right'].includes(n.type)) {

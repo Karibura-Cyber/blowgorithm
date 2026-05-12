@@ -320,9 +320,12 @@ function findMerge(nodeA, nodeB, visited) {
 function pyExpr(expr) {
   if (!expr) return 'None';
   return expr
-    .replace(/\bTrue\b/g, 'True').replace(/\bFalse\b/g, 'False')
-    .replace(/\btrue\b/g, 'True').replace(/\bfalse\b/g, 'False')
-    .replace(/&&/g, ' and ').replace(/\|\|/g, ' or ').replace(/!/g, 'not ')
+    .replace(/\btrue\b/g, 'True')
+    .replace(/\bfalse\b/g, 'False')
+    .replace(/\bnull\b/g, 'None')
+    .replace(/&&/g, ' and ')
+    .replace(/\|\|/g, ' or ')
+    .replace(/!(?!=)/g, 'not ')
     .replace(/\^/g, '**')
     .replace(/\bmod\b/g, '%')
     .trim();

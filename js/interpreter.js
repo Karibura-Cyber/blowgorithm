@@ -1,9 +1,20 @@
 // ═══════════════════════════════════════════════
 //  INTERPRETER — EVAL HELPERS
 // ═══════════════════════════════════════════════
+function normExpr(expr) {
+  return expr
+    .replace(/\bTrue\b/g, 'true')
+    .replace(/\bFalse\b/g, 'false')
+    .replace(/\bNone\b/g, 'null')
+    .replace(/\bnot\b\s*/g, '!')
+    .replace(/\band\b/g, '&&')
+    .replace(/\bor\b/g, '||')
+    .replace(/\bmod\b/g, '%');
+}
+
 function evalExpr(expr, vars) {
   const keys = Object.keys(vars), vals = keys.map(k => vars[k]);
-  return new Function(...keys, `"use strict";return (${expr});`)(...vals);
+  return new Function(...keys, `"use strict";return (${normExpr(expr)});`)(...vals);
 }
 
 function evalOutput(expr, vars) {
