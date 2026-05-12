@@ -9,6 +9,7 @@ function ns(tag) { return document.createElementNS('http://www.w3.org/2000/svg',
 function addNode(type, x, y) {
   historySnapshot();
   const def = SHAPE_DEFS[type];
+  if (!def) { console.warn('addNode: unknown type', type); return null; }
   const n = {
     id: nextId++, type,
     x: x - def.w / 2, y: y - def.h / 2,

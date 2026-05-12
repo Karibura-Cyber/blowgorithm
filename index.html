@@ -502,12 +502,12 @@
     <div class="sep"></div>
     <button onclick="toggleTurtleVisible()">Toggle</button>
     <div class="sep"></div>
-    <div id="turtle-speed-wrap">
-      <button class="turtle-spd" data-spd="slow" onclick="setTurtleSpeed('slow')" title="Slow (400ms/step)">Slow</button>
-      <button class="turtle-spd active" data-spd="medium" onclick="setTurtleSpeed('medium')" title="Medium (80ms/step)">Med</button>
-      <button class="turtle-spd" data-spd="fast" onclick="setTurtleSpeed('fast')" title="Fast (12ms/step)">Fast</button>
-      <button class="turtle-spd" data-spd="superfast" onclick="setTurtleSpeed('superfast')" title="Super Fast (instant)">Turbo</button>
-    </div>
+    <select id="turtle-speed-sel" onchange="setTurtleSpeed(this.value)" title="Drawing speed">
+      <option value="slow">Slow</option>
+      <option value="medium" selected>Medium</option>
+      <option value="fast">Fast</option>
+      <option value="superfast">Super Fast</option>
+    </select>
   </div>
   <div class="fw-body" id="turtle-win-body" style="padding:0;overflow:hidden;flex:1;position:relative;">
     <canvas id="turtle-canvas"></canvas>

@@ -160,10 +160,9 @@ function toggleTurtleVisible() { turtleState.visible = !turtleState.visible; ren
 
 function setTurtleSpeed(level) {
   const delays = { slow: 400, medium: 80, fast: 12, superfast: 0 };
-  turtleStepDelay = delays[level] ?? 80;
-  document.querySelectorAll('.turtle-spd').forEach(b => {
-    b.classList.toggle('active', b.dataset.spd === level);
-  });
+  turtleStepDelay = level in delays ? delays[level] : 80;
+  const sel = document.getElementById('turtle-speed-sel');
+  if (sel && sel.value !== level) sel.value = level;
 }
 
 // ═══════════════════════════════════════════════
