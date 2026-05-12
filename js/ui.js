@@ -215,6 +215,13 @@ function renderProps(n) {
       <div class="prop-hint">รองรับตัวแปรใน flowchart</div>
     </div>`;
   }
+  if (n.type === 'turtle_circle') {
+    html += `<div class="prop-group">
+      <div class="prop-label">มุม Arc (Angle, default 360°)</div>
+      <input class="prop-input" id="pp-t-angle" value="${esc(n.vars.angle || '360')}" placeholder="เช่น 360, 180, 90">
+      <div class="prop-hint">0–360° · รองรับตัวแปรใน flowchart</div>
+    </div>`;
+  }
   if (['turtle_pencolor', 'turtle_fillcolor'].includes(n.type)) {
     const defC = n.type === 'turtle_pencolor' ? '#000000' : '#ff0000';
     html += `<div class="prop-group">
@@ -355,6 +362,13 @@ function renderProps(n) {
   const ptv = document.getElementById('pp-t-val');
   if (ptv) ptv.oninput = e => {
     n.vars.value = e.target.value;
+    n.label = getTurtleLabel(n);
+    const l = document.getElementById('pp-label'); if (l) l.value = n.label;
+    redrawNode(n);
+  };
+  const pta = document.getElementById('pp-t-angle');
+  if (pta) pta.oninput = e => {
+    n.vars.angle = e.target.value;
     n.label = getTurtleLabel(n);
     const l = document.getElementById('pp-label'); if (l) l.value = n.label;
     redrawNode(n);

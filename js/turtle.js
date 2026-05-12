@@ -16,7 +16,7 @@ function getTurtleLabel(n) {
     turtle_endfill: 'end fill',
     turtle_home: 'home',
     turtle_clear: 'clear',
-    turtle_circle: `circle ${v}`,
+    turtle_circle: `circle ${v}, ${n.vars.angle || '360'}°`,
   };
   return map[n.type] || n.label || n.type;
 }
@@ -81,7 +81,12 @@ function renderTurtleCanvas() {
       op.path.forEach((pt, i) => { if (i === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y); });
       ctx.closePath(); ctx.fillStyle = op.color; ctx.fill();
     } else if (op.type === 'arc') {
-      ctx.beginPath(); ctx.arc(op.cx, op.cy, op.r, 0, 2 * Math.PI);
+      ctx.beginPath();
+      if (op.startA !== undefined) {
+        ctx.arc(op.cx, op.cy, op.r, op.startA, op.endA, op.ccw);
+      } else {
+        ctx.arc(op.cx, op.cy, op.r, 0, 2 * Math.PI);
+      }
       ctx.strokeStyle = op.color; ctx.lineWidth = op.width || 1.5; ctx.stroke();
     }
   }
@@ -110,17 +115,44 @@ function turtleForward(dist) {
 function turtleTurnLeft(deg) { turtleState.angle = (turtleState.angle - deg + 360) % 360; renderTurtleCanvas(); }
 function turtleTurnRight(deg) { turtleState.angle = (turtleState.angle + deg) % 360; renderTurtleCanvas(); }
 
-function turtleCircle(radius) {
+function turtleCircle(radius, extent) {
+  if (extent === undefined || extent === null || isNaN(extent)) extent = 360;
+  extent = Math.abs(extent);
+  if (extent <= 0 || radius === 0) return;
+
   const r = Math.abs(radius);
+  const sign = radius >= 0 ? 1 : -1;
+  const θ = turtleState.angle * Math.PI / 180;
+
+  // Center is r units to the LEFT (positive radius) or RIGHT (negative radius) of heading
+  const cx = turtleState.x - sign * r * Math.cos(θ);
+  const cy = turtleState.y - sign * r * Math.sin(θ);
+
+  const startA = Math.atan2(turtleState.y - cy, turtleState.x - cx);
+  const extRad = extent * Math.PI / 180;
+  // Positive radius → CCW on screen (anticlockwise=true, angle decreases)
+  // Negative radius → CW on screen (anticlockwise=false, angle increases)
+  const endA = sign > 0 ? startA - extRad : startA + extRad;
+  const ccw = sign > 0;
+
   if (turtleState.penDown)
-    turtleDraw.push({ type: 'arc', cx: turtleState.x, cy: turtleState.y, r, color: turtleState.penColor, width: turtleState.penWidth });
+    turtleDraw.push({ type: 'arc', cx, cy, r, startA, endA, ccw, color: turtleState.penColor, width: turtleState.penWidth });
+
+  // Move turtle to arc end
+  turtleState.x = cx + r * Math.cos(endA);
+  turtleState.y = cy + r * Math.sin(endA);
+
+  // Rotate heading: positive radius turns left by extent, negative turns right
+  turtleState.angle = ((turtleState.angle - sign * extent) % 360 + 360) % 360;
+
   if (turtleState.filling) {
-    const steps = 36;
-    for (let i = 0; i <= steps; i++) {
-      const a = (i / steps) * 2 * Math.PI;
-      turtleState.fillPath.push({ x: turtleState.x + r * Math.cos(a), y: turtleState.y + r * Math.sin(a) });
+    const steps = Math.max(4, Math.round(extent / 5));
+    for (let i = 1; i <= steps; i++) {
+      const a = sign > 0 ? startA - extRad * i / steps : startA + extRad * i / steps;
+      turtleState.fillPath.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
     }
   }
+
   renderTurtleCanvas();
 }
 

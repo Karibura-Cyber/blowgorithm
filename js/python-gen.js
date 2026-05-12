@@ -189,7 +189,9 @@ function genBlock(node, depth, lines, visited, stopAtId = null) {
     } else if (t === 'turtle_clear') {
       lines.push(ind(depth) + 't.clear()');
     } else if (t === 'turtle_circle') {
-      lines.push(ind(depth) + `t.circle(${pyExpr(cur.vars.value || '100')})`);
+      const ang = cur.vars.angle || '360';
+      const angStr = ang !== '360' ? `, ${pyExpr(ang)}` : '';
+      lines.push(ind(depth) + `t.circle(${pyExpr(cur.vars.value || '100')}${angStr})`);
     }
 
     const nextConn = conns.find(c => c.from === cur.id);

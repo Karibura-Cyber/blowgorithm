@@ -240,7 +240,11 @@ async function runFlowchart() {
       turtleDraw = []; renderTurtleCanvas();
     } else if (cur.type === 'turtle_circle') {
       if (!turtleOpened) { openTurtleWin(); turtleOpened = true; }
-      try { const r = parseFloat(evalExpr(cur.vars.value || '100', vars)); turtleCircle(r); }
+      try {
+        const r = parseFloat(evalExpr(cur.vars.value || '100', vars));
+        const a = parseFloat(evalExpr(cur.vars.angle || '360', vars));
+        turtleCircle(r, a);
+      }
       catch (e) { conLine(`Turtle error: ${e.message}`, 'con-err'); }
     } else if (cur.type === 'declare') {
       const vn = cur.vars.varName;
@@ -562,7 +566,7 @@ async function _executeOneStep() {
       }
       else if (cur.type === 'turtle_home') { homeTurtle(); }
       else if (cur.type === 'turtle_clear') { turtleDraw = []; renderTurtleCanvas(); }
-      else if (cur.type === 'turtle_circle') { const r = parseFloat(evalExpr(cur.vars.value || '100', s.vars)); turtleCircle(r); }
+      else if (cur.type === 'turtle_circle') { const r = parseFloat(evalExpr(cur.vars.value || '100', s.vars)); const a = parseFloat(evalExpr(cur.vars.angle || '360', s.vars)); turtleCircle(r, a); }
     } catch (e) { conLine(`Turtle error: ${e.message}`, 'con-err'); }
   }
 
