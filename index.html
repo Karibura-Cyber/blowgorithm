@@ -289,6 +289,18 @@
 
     <div class="tb-sep"></div>
     <div class="tb-section">
+      <div class="tb-label">Turtle — Draw</div>
+
+      <div class="tb-btn" data-mode="add:turtle_circle" onclick="setMode('add:turtle_circle')">
+        <div class="shape-icon">
+          <svg width="30" height="18" viewBox="0 0 30 18"><rect x="1" y="3" width="28" height="12" rx="4" fill="#e0f7fa" stroke="#0891b2" stroke-width="1.5"/><circle cx="15" cy="9" r="4" fill="none" stroke="#0891b2" stroke-width="1.5"/></svg>
+        </div>
+        Circle
+      </div>
+    </div>
+
+    <div class="tb-sep"></div>
+    <div class="tb-section">
       <div class="tb-label">Turtle — Util</div>
 
       <div class="tb-btn" data-mode="add:turtle_home" onclick="setMode('add:turtle_home')">
@@ -486,9 +498,16 @@
     <div class="sep"></div>
     <button onclick="homeTurtle()">Home</button>
     <div class="sep"></div>
-    <button onclick="turtleFitView()" title="Fit to Window">⊡ Fit</button>
+    <button onclick="turtleFitView()" title="Fit to Window">&#x229F; Fit</button>
     <div class="sep"></div>
     <button onclick="toggleTurtleVisible()">Toggle</button>
+    <div class="sep"></div>
+    <div id="turtle-speed-wrap">
+      <button class="turtle-spd" data-spd="slow" onclick="setTurtleSpeed('slow')" title="Slow (400ms/step)">Slow</button>
+      <button class="turtle-spd active" data-spd="medium" onclick="setTurtleSpeed('medium')" title="Medium (80ms/step)">Med</button>
+      <button class="turtle-spd" data-spd="fast" onclick="setTurtleSpeed('fast')" title="Fast (12ms/step)">Fast</button>
+      <button class="turtle-spd" data-spd="superfast" onclick="setTurtleSpeed('superfast')" title="Super Fast (instant)">Turbo</button>
+    </div>
   </div>
   <div class="fw-body" id="turtle-win-body" style="padding:0;overflow:hidden;flex:1;position:relative;">
     <canvas id="turtle-canvas"></canvas>

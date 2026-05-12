@@ -30,6 +30,7 @@ function setMode(m) {
     'add:turtle_endfill': 'คลิก canvas เพื่อวาง Turtle End Fill',
     'add:turtle_home': 'คลิก canvas เพื่อวาง Turtle Home',
     'add:turtle_clear': 'คลิก canvas เพื่อวาง Turtle Clear',
+    'add:turtle_circle': 'คลิก canvas เพื่อวาง Turtle Circle — วาดวงกลมที่ตำแหน่งของ turtle',
   };
   statusMsg.textContent = hints[m] || '';
 }
@@ -45,6 +46,7 @@ const typeNames = {
   turtle_penup: 'Turtle Pen Up', turtle_pendown: 'Turtle Pen Down', turtle_pencolor: 'Turtle Pen Color',
   turtle_fillcolor: 'Turtle Fill Color', turtle_beginfill: 'Turtle Begin Fill', turtle_endfill: 'Turtle End Fill',
   turtle_home: 'Turtle Home', turtle_clear: 'Turtle Clear',
+  turtle_circle: 'Turtle Circle',
 };
 const typeColors = {
   start: '#dcfce7', process: '#dbeafe', decision: '#fef9c3', io: '#fce7f3',
@@ -54,6 +56,7 @@ const typeColors = {
   turtle_penup: '#e0f2fe', turtle_pendown: '#e0f2fe', turtle_pencolor: '#ede9fe',
   turtle_fillcolor: '#faf5ff', turtle_beginfill: '#fce7f3', turtle_endfill: '#fce7f3',
   turtle_home: '#fef3c7', turtle_clear: '#f1f5f9',
+  turtle_circle: '#e0f7fa',
 };
 const typeTextColors = {
   start: '#16a34a', process: '#2563eb', decision: '#92400e', io: '#9d174d',
@@ -63,6 +66,7 @@ const typeTextColors = {
   turtle_penup: '#0284c7', turtle_pendown: '#0284c7', turtle_pencolor: '#7c3aed',
   turtle_fillcolor: '#9333ea', turtle_beginfill: '#db2777', turtle_endfill: '#db2777',
   turtle_home: '#d97706', turtle_clear: '#475569',
+  turtle_circle: '#0891b2',
 };
 
 function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -203,8 +207,8 @@ function renderProps(n) {
       <div class="prop-hint">ใช้ and · or · not · != ได้เลย · ทำ Body ก่อน แล้วตรวจเงื่อนไข · ↑ Loop กลับ Top · ▶ Exit ออก Right</div>
     </div>`;
   }
-  if (['turtle_forward', 'turtle_left', 'turtle_right'].includes(n.type)) {
-    const lbl = n.type === 'turtle_forward' ? 'ระยะทาง (Distance)' : 'มุม (Angle degrees)';
+  if (['turtle_forward', 'turtle_left', 'turtle_right', 'turtle_circle'].includes(n.type)) {
+    const lbl = n.type === 'turtle_forward' ? 'ระยะทาง (Distance)' : n.type === 'turtle_circle' ? 'รัศมี (Radius)' : 'มุม (Angle degrees)';
     html += `<div class="prop-group">
       <div class="prop-label">${lbl}</div>
       <input class="prop-input" id="pp-t-val" value="${esc(n.vars.value || '100')}" placeholder="เช่น 100, 90, x">

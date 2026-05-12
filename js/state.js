@@ -23,11 +23,13 @@ const SHAPE_DEFS = {
   turtle_endfill:   {w:152,h:44, color:'#db2777', fill:'#fce7f3', stroke:'#db2777', label:'end fill'},
   turtle_home:      {w:152,h:44, color:'#d97706', fill:'#fef3c7', stroke:'#d97706', label:'home'},
   turtle_clear:     {w:152,h:44, color:'#64748b', fill:'#f1f5f9', stroke:'#64748b', label:'clear'},
+  turtle_circle:    {w:152,h:44, color:'#0891b2', fill:'#e0f7fa', stroke:'#0891b2', label:'circle 100',      defaultVars:{value:'100'}},
 };
 
 // ═══════════════════════════════════════════════
 //  MUTABLE STATE
 // ═══════════════════════════════════════════════
+let turtleStepDelay = 80;
 let nodes = [], conns = [], selId = null, nextId = 1;
 let mode = 'select';
 let drag = null, dragOff = {x:0, y:0};

@@ -16,6 +16,7 @@ function getTurtleLabel(n) {
     turtle_endfill: 'end fill',
     turtle_home: 'home',
     turtle_clear: 'clear',
+    turtle_circle: `circle ${v}`,
   };
   return map[n.type] || n.label || n.type;
 }
@@ -79,6 +80,9 @@ function renderTurtleCanvas() {
       ctx.beginPath();
       op.path.forEach((pt, i) => { if (i === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y); });
       ctx.closePath(); ctx.fillStyle = op.color; ctx.fill();
+    } else if (op.type === 'arc') {
+      ctx.beginPath(); ctx.arc(op.cx, op.cy, op.r, 0, 2 * Math.PI);
+      ctx.strokeStyle = op.color; ctx.lineWidth = op.width || 1.5; ctx.stroke();
     }
   }
   if (turtleState.visible) {
@@ -106,6 +110,20 @@ function turtleForward(dist) {
 function turtleTurnLeft(deg) { turtleState.angle = (turtleState.angle - deg + 360) % 360; renderTurtleCanvas(); }
 function turtleTurnRight(deg) { turtleState.angle = (turtleState.angle + deg) % 360; renderTurtleCanvas(); }
 
+function turtleCircle(radius) {
+  const r = Math.abs(radius);
+  if (turtleState.penDown)
+    turtleDraw.push({ type: 'arc', cx: turtleState.x, cy: turtleState.y, r, color: turtleState.penColor, width: turtleState.penWidth });
+  if (turtleState.filling) {
+    const steps = 36;
+    for (let i = 0; i <= steps; i++) {
+      const a = (i / steps) * 2 * Math.PI;
+      turtleState.fillPath.push({ x: turtleState.x + r * Math.cos(a), y: turtleState.y + r * Math.sin(a) });
+    }
+  }
+  renderTurtleCanvas();
+}
+
 function turtleFitView() {
   const canvas = document.getElementById('turtle-canvas');
   if (!canvas) return;
@@ -114,6 +132,7 @@ function turtleFitView() {
   turtleDraw.forEach(op => {
     if (op.type === 'line') { pts.push({ x: op.x1, y: op.y1 }, { x: op.x2, y: op.y2 }); }
     else if (op.type === 'fill') { pts.push(...op.path); }
+    else if (op.type === 'arc') { pts.push({ x: op.cx - op.r, y: op.cy }, { x: op.cx + op.r, y: op.cy }, { x: op.cx, y: op.cy - op.r }, { x: op.cx, y: op.cy + op.r }); }
   });
   pts.push({ x: turtleState.x, y: turtleState.y }, { x: 0, y: 0 });
   if (!pts.length) { turtleZoom = 1; turtlePan = { x: 0, y: 0 }; renderTurtleCanvas(); return; }
@@ -138,6 +157,14 @@ function clearTurtle() {
 }
 function homeTurtle() { turtleState.x = 0; turtleState.y = 0; turtleState.angle = 0; renderTurtleCanvas(); }
 function toggleTurtleVisible() { turtleState.visible = !turtleState.visible; renderTurtleCanvas(); }
+
+function setTurtleSpeed(level) {
+  const delays = { slow: 400, medium: 80, fast: 12, superfast: 0 };
+  turtleStepDelay = delays[level] ?? 80;
+  document.querySelectorAll('.turtle-spd').forEach(b => {
+    b.classList.toggle('active', b.dataset.spd === level);
+  });
+}
 
 // ═══════════════════════════════════════════════
 //  TURTLE WINDOW CONTROLS

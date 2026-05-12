@@ -238,6 +238,10 @@ async function runFlowchart() {
     } else if (cur.type === 'turtle_clear') {
       if (!turtleOpened) { openTurtleWin(); turtleOpened = true; }
       turtleDraw = []; renderTurtleCanvas();
+    } else if (cur.type === 'turtle_circle') {
+      if (!turtleOpened) { openTurtleWin(); turtleOpened = true; }
+      try { const r = parseFloat(evalExpr(cur.vars.value || '100', vars)); turtleCircle(r); }
+      catch (e) { conLine(`Turtle error: ${e.message}`, 'con-err'); }
     } else if (cur.type === 'declare') {
       const vn = cur.vars.varName;
       if (vn) {
@@ -254,11 +258,12 @@ async function runFlowchart() {
       // sub-process call — no log
     }
 
+    const _wasTurtle = cur.type.startsWith('turtle_');
     const nextConn = conns.find(c => c.from === cur.id);
     if (nextConn) runHighlight = nextConn.id;
     renderConns();
     cur = nodes.find(n => n.id === (nextConn && nextConn.to)) || null;
-    await new Promise(r => setTimeout(r, 60));
+    await new Promise(r => setTimeout(r, _wasTurtle ? turtleStepDelay : 60));
   }
   if (steps >= MAX) conLine('หยุด: loop ซ้ำมากเกินไป (>5000 steps)', 'con-err');
   runHighlight = null; renderConns();
@@ -557,6 +562,7 @@ async function _executeOneStep() {
       }
       else if (cur.type === 'turtle_home') { homeTurtle(); }
       else if (cur.type === 'turtle_clear') { turtleDraw = []; renderTurtleCanvas(); }
+      else if (cur.type === 'turtle_circle') { const r = parseFloat(evalExpr(cur.vars.value || '100', s.vars)); turtleCircle(r); }
     } catch (e) { conLine(`Turtle error: ${e.message}`, 'con-err'); }
   }
 

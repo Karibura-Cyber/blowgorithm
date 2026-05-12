@@ -222,6 +222,7 @@ function renderNode(n) {
       turtle_penup: '⬆', turtle_pendown: '⬇', turtle_pencolor: '●',
       turtle_fillcolor: '◆', turtle_beginfill: '▶', turtle_endfill: '◀',
       turtle_home: '⌂', turtle_clear: '✕',
+      turtle_circle: '○',
     };
     const ico = ns('text');
     ico.setAttribute('x', n.x + 13); ico.setAttribute('y', n.y + n.h / 2 + 1);

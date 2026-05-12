@@ -188,6 +188,8 @@ function genBlock(node, depth, lines, visited, stopAtId = null) {
       lines.push(ind(depth) + 't.home()');
     } else if (t === 'turtle_clear') {
       lines.push(ind(depth) + 't.clear()');
+    } else if (t === 'turtle_circle') {
+      lines.push(ind(depth) + `t.circle(${pyExpr(cur.vars.value || '100')})`);
     }
 
     const nextConn = conns.find(c => c.from === cur.id);
