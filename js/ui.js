@@ -47,6 +47,7 @@ const typeNames = {
   turtle_fillcolor: 'Turtle Fill Color', turtle_beginfill: 'Turtle Begin Fill', turtle_endfill: 'Turtle End Fill',
   turtle_home: 'Turtle Home', turtle_clear: 'Turtle Clear',
   turtle_circle: 'Turtle Circle',
+  comment: 'Comment',
 };
 const typeColors = {
   start: '#dcfce7', process: '#dbeafe', decision: '#fef9c3', io: '#fce7f3',
@@ -57,6 +58,7 @@ const typeColors = {
   turtle_fillcolor: '#faf5ff', turtle_beginfill: '#fce7f3', turtle_endfill: '#fce7f3',
   turtle_home: '#fef3c7', turtle_clear: '#f1f5f9',
   turtle_circle: '#e0f7fa',
+  comment: '#fef9c3',
 };
 const typeTextColors = {
   start: '#16a34a', process: '#2563eb', decision: '#92400e', io: '#9d174d',
@@ -67,6 +69,7 @@ const typeTextColors = {
   turtle_fillcolor: '#9333ea', turtle_beginfill: '#db2777', turtle_endfill: '#db2777',
   turtle_home: '#d97706', turtle_clear: '#475569',
   turtle_circle: '#0891b2',
+  comment: '#92400e',
 };
 
 function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -494,6 +497,12 @@ document.getElementById('ctx-duplicate').addEventListener('click', () => {
   duplicateNode(_ctxNode);
   hideNodeCtxMenu();
 });
+document.getElementById('ctx-add-comment').addEventListener('click', () => {
+  if (!_ctxNode) return;
+  const n = _ctxNode;
+  addNode('comment', n.x + n.w + 100, n.y + n.h / 2);
+  hideNodeCtxMenu();
+});
 document.getElementById('ctx-remove').addEventListener('click', () => {
   if (!_ctxNode) return;
   if (!selIds.has(_ctxNode.id)) selectNode(_ctxNode.id);
@@ -505,6 +514,47 @@ document.addEventListener('mousedown', e => {
 }, { capture: true });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && ctxMenu.classList.contains('open')) hideNodeCtxMenu();
+}, { capture: true });
+
+// ═══════════════════════════════════════════════
+//  CANVAS CONTEXT MENU
+// ═══════════════════════════════════════════════
+let _canvasCtxPos = null;
+const canvasCtxMenu = document.getElementById('canvas-ctx-menu');
+
+function showCanvasCtxMenu(cx, cy, svgX, svgY) {
+  _canvasCtxPos = { svgX, svgY };
+  canvasCtxMenu.style.left = '0px'; canvasCtxMenu.style.top = '0px';
+  canvasCtxMenu.classList.add('open');
+  const mw = canvasCtxMenu.offsetWidth || 170, mh = canvasCtxMenu.offsetHeight || 130;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  canvasCtxMenu.style.left = Math.min(cx, vw - mw - 8) + 'px';
+  canvasCtxMenu.style.top = Math.min(cy, vh - mh - 8) + 'px';
+}
+
+function hideCanvasCtxMenu() {
+  canvasCtxMenu.classList.remove('open');
+  _canvasCtxPos = null;
+}
+
+document.getElementById('canvas-ctx-comment').addEventListener('click', () => {
+  if (!_canvasCtxPos) return;
+  addNode('comment', _canvasCtxPos.svgX, _canvasCtxPos.svgY);
+  hideCanvasCtxMenu();
+});
+document.getElementById('canvas-ctx-paste').addEventListener('click', () => {
+  pasteSelected();
+  hideCanvasCtxMenu();
+});
+document.getElementById('canvas-ctx-select-all').addEventListener('click', () => {
+  setSelIds(nodes.map(n => n.id));
+  hideCanvasCtxMenu();
+});
+document.addEventListener('mousedown', e => {
+  if (canvasCtxMenu.classList.contains('open') && !canvasCtxMenu.contains(e.target)) hideCanvasCtxMenu();
+}, { capture: true });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && canvasCtxMenu.classList.contains('open')) hideCanvasCtxMenu();
 }, { capture: true });
 
 // ═══════════════════════════════════════════════

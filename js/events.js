@@ -133,7 +133,12 @@ nodeLayer.addEventListener('mouseup', e => {
 });
 
 wrap.addEventListener('contextmenu', e => {
-  if (!e.target.closest('[data-id]')) e.preventDefault();
+  if (!e.target.closest('[data-id]')) {
+    e.preventDefault();
+    deselect();
+    const c = toSVG(e.clientX, e.clientY);
+    showCanvasCtxMenu(e.clientX, e.clientY, c.x, c.y);
+  }
 });
 
 // Wheel zoom

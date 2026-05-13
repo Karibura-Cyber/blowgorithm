@@ -90,6 +90,7 @@ function fitNodeToLabel(n) {
   else if (n.type === 'do_while')     { padX = 44; padY = 26; }
   else if (n.type === 'call')         { padX = 44; padY = 16; }
   else if (n.type.startsWith('turtle_')) { padX = 44; padY = 14; }
+  else if (n.type === 'comment')       { padX = 28; padY = 28; }
   else                                { padX = 32; padY = 16; }
   const newW = Math.max(minW, Math.ceil(textW + padX));
   const newH = Math.max(minH, Math.ceil(lines * lineH + padY));
@@ -134,6 +135,12 @@ function makeShape(n) {
     el.setAttribute('x', n.x); el.setAttribute('y', n.y);
     el.setAttribute('width', n.w); el.setAttribute('height', n.h);
     el.setAttribute('rx', 8);
+  } else if (n.type === 'comment') {
+    const fold = 14;
+    el = ns('polygon');
+    el.setAttribute('points',
+      `${n.x},${n.y} ${n.x+n.w-fold},${n.y} ${n.x+n.w},${n.y+fold} ${n.x+n.w},${n.y+n.h} ${n.x},${n.y+n.h}`
+    );
   } else {
     el = ns('rect');
     el.setAttribute('x', n.x); el.setAttribute('y', n.y);
@@ -217,6 +224,15 @@ function renderNode(n) {
     dbl.setAttribute('x2', n.x + n.w - 5); dbl.setAttribute('y2', n.y + n.h - 8);
     dbl.setAttribute('stroke', def.stroke); dbl.setAttribute('stroke-width', '1.2'); dbl.setAttribute('stroke-opacity', '0.55');
     g.appendChild(shape); g.appendChild(dbl);
+  } else if (n.type === 'comment') {
+    const fold = 14;
+    const foldTri = ns('polygon');
+    foldTri.setAttribute('points', `${n.x+n.w-fold},${n.y} ${n.x+n.w},${n.y+fold} ${n.x+n.w-fold},${n.y+fold}`);
+    foldTri.setAttribute('fill', def.stroke);
+    foldTri.setAttribute('opacity', '0.35');
+    foldTri.setAttribute('pointer-events', 'none');
+    g.appendChild(shape);
+    g.appendChild(foldTri);
   } else if (n.type.startsWith('turtle_')) {
     const icoMap = {
       turtle_forward: '▲', turtle_left: '↺', turtle_right: '↻',
@@ -238,7 +254,27 @@ function renderNode(n) {
 
   // Label (support \n via tspan)
   const lines = n.label.split('\n');
-  if (lines.length === 1) {
+  if (n.type === 'comment') {
+    const txt = ns('text');
+    txt.setAttribute('x', n.x + 9);
+    txt.setAttribute('y', n.y + 16);
+    txt.setAttribute('text-anchor', 'start');
+    txt.setAttribute('dominant-baseline', 'auto');
+    txt.setAttribute('font-size', '11.5');
+    txt.setAttribute('font-family', "'Noto Sans Thai',sans-serif");
+    txt.setAttribute('font-weight', '400');
+    txt.setAttribute('fill', def.color);
+    txt.setAttribute('pointer-events', 'none');
+    txt.setAttribute('font-style', 'italic');
+    lines.forEach((l, i) => {
+      const ts = ns('tspan');
+      ts.setAttribute('x', n.x + 9);
+      if (i > 0) ts.setAttribute('dy', '1.4em');
+      ts.textContent = l || ' ';
+      txt.appendChild(ts);
+    });
+    g.appendChild(txt);
+  } else if (lines.length === 1) {
     const txt = ns('text');
     txt.setAttribute('x', n.x + n.w / 2);
     txt.setAttribute('y', n.y + n.h / 2);
@@ -346,8 +382,8 @@ function renderNode(n) {
     g.appendChild(bodyLbl); g.appendChild(exitLbl);
   }
 
-  // Connection dots
-  const dots = makeDots(n);
+  // Connection dots (not for comment annotations)
+  const dots = n.type !== 'comment' ? makeDots(n) : [];
   dots.forEach(d => g.appendChild(d));
 
   // Mouse events
